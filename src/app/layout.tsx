@@ -1,18 +1,16 @@
 import type { Metadata } from "next";
-import { Inter } from 'next/font/google'
+import { Inter } from "next/font/google";
 import "./globals.css";
+import Navigation from '@/components/Navigation'
 import SessionProvider from '@/components/SessionProvider'
 import { getServerSession } from 'next-auth'
-import Navigation from '@/components/Navigation'
+import { authOptions } from '@/lib/auth'
 
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
-})
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Software Quality Books",
-  description: "The best place to find sodtware quality books reviewed by the community",
+  description: "A collection of books about software quality",
 };
 
 export default async function RootLayout({
@@ -20,11 +18,9 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await getServerSession()
-
   return (
     <html lang="en">
-      <body className={`${inter.variable} font-sans`}>
+      <body className={inter.className}>
         <SessionProvider>
           <Navigation />
           <main className="container mx-auto px-4 py-8">

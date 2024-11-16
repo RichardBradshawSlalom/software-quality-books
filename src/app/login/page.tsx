@@ -22,59 +22,65 @@ export default function LoginPage() {
       const res = await signIn('credentials', {
         email: formData.get('email'),
         password: formData.get('password'),
-        redirect: false,
+        redirect: false
       })
 
       if (res?.error) {
-        setError('Invalid credentials')
-      } else {
-        router.push('/books')
+        throw new Error(res.error)
       }
+
+      const callbackUrl = searchParams.get('callbackUrl') || '/books'
+      router.push(callbackUrl)
+      router.refresh()
+    } catch (error) {
+      setError(error.message)
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
-      <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
-        <h1 className="text-2xl font-bold text-center">Sign In</h1>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        <div>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            Sign in to your account
+          </h2>
+        </div>
 
-        {searchParams.get('registered') && (
-          <div className="bg-green-50 text-green-500 p-4 rounded-lg">
-            Account created successfully! Please sign in.
-          </div>
-        )}
-        
-        {error && (
-          <div className="bg-red-50 text-red-500 p-4 rounded-lg">
-            {error}
-          </div>
-        )}
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          {error && (
+            <div className="bg-red-50 text-red-500 p-4 rounded-lg">
+              {error}
+            </div>
+          )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium">
-              Email
-            </label>
-            <input
-              type="email"
-              name="email"
-              required
-              className="w-full px-3 py-2 border rounded-lg"
-            />
-          </div>
+          <div className="rounded-md shadow-sm space-y-4">
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium">
+                Email address
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                required
+                className="w-full px-3 py-2 border rounded-lg"
+              />
+            </div>
 
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium">
-              Password
-            </label>
-            <input
-              type="password"
-              name="password"
-              required
-              className="w-full px-3 py-2 border rounded-lg"
-            />
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium">
+                Password
+              </label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                required
+                className="w-full px-3 py-2 border rounded-lg"
+              />
+            </div>
           </div>
 
           <button
@@ -87,7 +93,7 @@ export default function LoginPage() {
         </form>
 
         <p className="text-center text-sm">
-          Don't have an account?{' '}
+          Don&apos;t have an account?{' '}
           <Link href="/register" className="text-blue-500 hover:underline">
             Register
           </Link>

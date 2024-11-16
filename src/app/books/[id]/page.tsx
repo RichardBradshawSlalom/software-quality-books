@@ -3,7 +3,6 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { Book } from '@/types/book'
 import { useSession } from 'next-auth/react'
 import ReviewForm from '@/components/ReviewForm'
@@ -27,7 +26,6 @@ interface BookState {
 }
 
 export default function BookPage({ params }: { params: { id: string } }) {
-  const router = useRouter()
   const { data: session } = useSession()
   const [state, setState] = useState<BookState>({
     book: null,
