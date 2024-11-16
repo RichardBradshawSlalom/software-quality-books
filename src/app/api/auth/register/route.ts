@@ -35,9 +35,7 @@ export async function POST(request: Request) {
       select: {
         id: true,
         email: true,
-        name: true,
-        createdAt: true,
-        updatedAt: true
+        name: true
       }
     })
 
