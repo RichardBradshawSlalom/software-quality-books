@@ -8,7 +8,9 @@ export default withAuth({
 
 export const config = {
   matcher: [
-    '/books/:path*',  // Protect all routes under /books
-    '/api/books/:path*'  // Protect all book API routes
+    '/books/new',
+    '/books/edit/:path*',
+    '/api/books/:path*/edit',
+    '/api/books/new',
   ]
 } 

@@ -6,9 +6,22 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Book } from '@/types/book'
 import { useSession } from 'next-auth/react'
+import ReviewForm from '@/components/ReviewForm'
+
+interface Review {
+  id: string
+  content: string
+  rating: number
+  createdAt: string
+  user: {
+    name: string | null
+    email: string | null
+  }
+}
 
 interface BookState {
   book: Book | null
+  reviews: Review[]
   isLoading: boolean
   error: string | null
 }
@@ -18,19 +31,46 @@ export default function BookPage({ params }: { params: { id: string } }) {
   const { data: session } = useSession()
   const [state, setState] = useState<BookState>({
     book: null,
+    reviews: [],
     isLoading: true,
     error: null
   })
 
-  useEffect(() => {
-    fetch(`/api/books/${params.id}`)
-      .then(res => {
-        if (!res.ok) throw new Error('Failed to fetch book')
-        return res.json()
+  const fetchData = async () => {
+    try {
+      const [bookRes, reviewsRes] = await Promise.all([
+        fetch(`/api/books/${params.id}`),
+        fetch(`/api/books/${params.id}/reviews`)
+      ])
+
+      if (!bookRes.ok) throw new Error('Failed to fetch book')
+      if (!reviewsRes.ok) throw new Error('Failed to fetch reviews')
+      
+      const book = await bookRes.json()
+      const reviews = await reviewsRes.json()
+      
+      setState({ 
+        book, 
+        reviews, 
+        isLoading: false, 
+        error: null 
       })
-      .then(book => setState({ book, isLoading: false, error: null }))
-      .catch(error => setState({ book: null, isLoading: false, error: error.message }))
+    } catch (error) {
+      setState(prev => ({ 
+        ...prev, 
+        isLoading: false, 
+        error: error.message 
+      }))
+    }
+  }
+
+  useEffect(() => {
+    fetchData()
   }, [params.id])
+
+  const handleReviewAdded = () => {
+    fetchData() // Refresh data when a review is added
+  }
 
   if (state.isLoading) {
     return <div>Loading...</div>
@@ -66,9 +106,53 @@ export default function BookPage({ params }: { params: { id: string } }) {
           )}
         </div>
 
-        <div className="bg-white shadow-lg rounded-lg p-6">
+        <div className="bg-white shadow-lg rounded-lg p-6 mb-8">
           <h1 className="text-3xl font-bold mb-4">{state.book.title}</h1>
           <p className="text-gray-600 whitespace-pre-wrap">{state.book.description}</p>
+        </div>
+
+        <div className="mt-8">
+          <h2 className="text-2xl font-bold mb-4">Reviews</h2>
+          
+          {session ? (
+            <div className="mb-8">
+              <h3 className="text-lg font-semibold mb-4">Add a Review</h3>
+              <ReviewForm bookId={params.id} onReviewAdded={handleReviewAdded} />
+            </div>
+          ) : (
+            <p className="mb-8">
+              <Link href="/login" className="text-blue-500 hover:underline">
+                Sign in
+              </Link>
+              {' '}to leave a review
+            </p>
+          )}
+
+          <div className="space-y-6">
+            {state.reviews.map((review) => (
+              <div key={review.id} className="bg-gray-50 p-4 rounded-lg">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="font-semibold">
+                    {review.user.name || review.user.email}
+                  </div>
+                  <div className="text-yellow-500">
+                    {'★'.repeat(review.rating)}
+                    {'☆'.repeat(5 - review.rating)}
+                  </div>
+                </div>
+                <p className="text-gray-600">{review.content}</p>
+                <div className="text-sm text-gray-400 mt-2">
+                  {new Date(review.createdAt).toLocaleDateString()}
+                </div>
+              </div>
+            ))}
+            
+            {state.reviews.length === 0 && (
+              <p className="text-gray-500 text-center">
+                No reviews yet. Be the first to review this book!
+              </p>
+            )}
+          </div>
         </div>
       </div>
     </div>

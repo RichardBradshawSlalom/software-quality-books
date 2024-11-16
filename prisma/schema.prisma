@@ -18,6 +18,7 @@ model Book {
   createdAt   DateTime @default(now())
   userId      String?
   user        User?     @relation(fields: [userId], references: [id])
+  reviews     Review[]
 }
 
 model Account {
@@ -57,6 +58,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
   books         Book[]
+  reviews       Review[]
 }
 
 model VerificationToken {
@@ -65,4 +67,16 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  content   String
+  rating    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  bookId    String
+  userId    String
+  book      Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

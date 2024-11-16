@@ -1,18 +1,20 @@
 // app/api/books/route.ts
 import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
 import prisma from '@/lib/db'
-import { authOptions } from '@/lib/auth'
+
+export const dynamic = 'force-dynamic'
 
 export async function GET() {
   try {
     const books = await prisma.book.findMany({
       orderBy: {
         createdAt: 'desc'
-      }
+      },
+      take: 3
     })
     return NextResponse.json(books)
   } catch (error) {
+    console.error('Error fetching books:', error)
     return NextResponse.json(
       { error: 'Failed to fetch books' },
       { status: 500 }
