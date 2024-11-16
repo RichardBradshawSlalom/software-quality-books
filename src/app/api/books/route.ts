@@ -1,6 +1,8 @@
 // app/api/books/route.ts
 import { NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
 import prisma from '@/lib/db'
+import { authOptions } from '@/lib/auth'
 
 export const dynamic = 'force-dynamic'
 

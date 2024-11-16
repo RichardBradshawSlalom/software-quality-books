@@ -53,11 +53,15 @@ export default function BookPage({ params }: { params: { id: string } }) {
         isLoading: false, 
         error: null 
       })
-    } catch (error) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'An error occurred'
+      
       setState(prev => ({ 
         ...prev, 
         isLoading: false, 
-        error: error.message 
+        error: errorMessage 
       }))
     }
   }
@@ -66,20 +70,31 @@ export default function BookPage({ params }: { params: { id: string } }) {
     fetchData()
   }, [params.id])
 
-  const handleReviewAdded = () => {
-    fetchData() // Refresh data when a review is added
-  }
-
   if (state.isLoading) {
-    return <div>Loading...</div>
+    return (
+      <div className="container mx-auto p-4">
+        <h1 className="text-3xl font-bold mb-6">Loading...</h1>
+      </div>
+    )
   }
 
   if (state.error) {
-    return <div>Error: {state.error}</div>
+    return (
+      <div className="container mx-auto p-4">
+        <h1 className="text-3xl font-bold mb-6">Error</h1>
+        <div className="bg-red-50 text-red-500 p-4 rounded-lg">
+          {state.error}
+        </div>
+      </div>
+    )
   }
 
   if (!state.book) {
-    return <div>Book not found</div>
+    return (
+      <div className="container mx-auto p-4">
+        <h1 className="text-3xl font-bold mb-6">Book not found</h1>
+      </div>
+    )
   }
 
   const isOwner = session?.user?.id === state.book.userId
@@ -115,7 +130,10 @@ export default function BookPage({ params }: { params: { id: string } }) {
           {session ? (
             <div className="mb-8">
               <h3 className="text-lg font-semibold mb-4">Add a Review</h3>
-              <ReviewForm bookId={params.id} onReviewAdded={handleReviewAdded} />
+              <ReviewForm 
+                bookId={params.id} 
+                onReviewAdded={fetchData}
+              />
             </div>
           ) : (
             <p className="mb-8">

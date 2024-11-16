@@ -3,71 +3,51 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { Book } from '@/types/book' // We'll create this type
+import { Book } from '@/types/book'
+import { useSession } from 'next-auth/react'
 
-interface BookState {
+interface BooksState {
   books: Book[]
   isLoading: boolean
   error: string | null
 }
 
 export default function BooksPage() {
-  const [state, setState] = useState<BookState>({
+  const { data: session } = useSession()
+  const [state, setState] = useState<BooksState>({
     books: [],
     isLoading: true,
     error: null
   })
 
   useEffect(() => {
-    const fetchBooks = async () => {
-      try {
-        const res = await fetch('/api/books')
+    fetch('/api/books')
+      .then(res => {
         if (!res.ok) throw new Error('Failed to fetch books')
-        const data = await res.json()
-        setState(prev => ({ ...prev, books: data, isLoading: false }))
-      } catch (error) {
-        setState(prev => ({
-          ...prev,
-          error: error instanceof Error ? error.message : 'An error occurred',
-          isLoading: false
-        }))
-      }
-    }
-
-    fetchBooks()
+        return res.json()
+      })
+      .then(books => setState({ books, isLoading: false, error: null }))
+      .catch(error => setState({ 
+        books: [], 
+        isLoading: false, 
+        error: error instanceof Error ? error.message : 'An error occurred' 
+      }))
   }, [])
 
   if (state.isLoading) {
     return (
-      <div className="container mx-auto p-4 text-center">
-        <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded w-1/4 mb-4 mx-auto"></div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="border rounded p-4">
-                <div className="h-6 bg-gray-200 rounded w-3/4 mb-2"></div>
-                <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
-                <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-              </div>
-            ))}
-          </div>
-        </div>
+      <div className="container mx-auto p-4">
+        <h1 className="text-3xl font-bold mb-6">Loading...</h1>
       </div>
     )
   }
 
   if (state.error) {
     return (
-      <div className="container mx-auto p-4 text-center">
-        <div className="bg-red-50 border border-red-200 rounded p-4">
-          <h2 className="text-red-800 text-lg font-semibold mb-2">Error</h2>
-          <p className="text-red-600">{state.error}</p>
-          <button 
-            onClick={() => window.location.reload()}
-            className="mt-4 bg-red-100 text-red-800 px-4 py-2 rounded hover:bg-red-200"
-          >
-            Try Again
-          </button>
+      <div className="container mx-auto p-4">
+        <h1 className="text-3xl font-bold mb-6">Error</h1>
+        <div className="bg-red-50 text-red-500 p-4 rounded-lg">
+          {state.error}
         </div>
       </div>
     )
@@ -75,34 +55,56 @@ export default function BooksPage() {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Books</h1>
-      <Link 
-        href="/books/new" 
-        className="mb-4 inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-      >
-        Add New Book
-      </Link>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">All Books</h1>
+        {session && (
+          <Link 
+            href="/books/new" 
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          >
+            Add New Book
+          </Link>
+        )}
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {state.books.map((book) => (
-          <div key={book.id} className="border rounded p-4 hover:shadow-lg transition">
-            <h2 className="text-xl font-semibold mb-2">
-              <Link href={`/books/${book.id}`} className="hover:text-blue-500">
-                {book.title}
-              </Link>
-            </h2>
-            <p className="text-gray-600 mb-2 line-clamp-2">{book.description}</p>
-            <a 
-              href={book.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-500 hover:underline"
-            >
-              Visit Book Link
-            </a>
+          <div key={book.id} className="bg-white shadow-lg rounded-lg overflow-hidden">
+            <div className="p-6">
+              <h2 className="text-xl font-bold mb-2">
+                <Link href={`/books/${book.id}`} className="hover:text-blue-500">
+                  {book.title}
+                </Link>
+              </h2>
+              <p className="text-gray-600 line-clamp-3 mb-4">
+                {book.description}
+              </p>
+              <div className="flex justify-between items-center text-sm text-gray-500">
+                <span>
+                  {new Date(book.createdAt).toLocaleDateString()}
+                </span>
+                <Link 
+                  href={`/books/${book.id}`}
+                  className="text-blue-500 hover:underline"
+                >
+                  Read more →
+                </Link>
+              </div>
+            </div>
           </div>
         ))}
       </div>
+
+      {state.books.length === 0 && (
+        <div className="text-center text-gray-500 mt-8">
+          <p>No books found.</p>
+          {session && (
+            <Link href="/books/new" className="text-blue-500 hover:underline">
+              Add the first book
+            </Link>
+          )}
+        </div>
+      )}
     </div>
   )
 }

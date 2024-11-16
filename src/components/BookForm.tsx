@@ -13,7 +13,11 @@ interface BookFormProps {
   returnUrl?: string
 }
 
-export default function BookForm({ initialData, isEditing = false, returnUrl }: BookFormProps) {
+export default function BookForm({ 
+  initialData, 
+  isEditing = false,
+  returnUrl = '/books'
+}: BookFormProps) {
   const router = useRouter()
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -31,26 +35,28 @@ export default function BookForm({ initialData, isEditing = false, returnUrl }: 
 
     try {
       const url = isEditing 
-        ? `/api/books/${initialData?.id}`
-        : '/api/books'
-      
-      const method = isEditing ? 'PUT' : 'POST'
+        ? `/api/books/${initialData?.id}/edit`
+        : '/api/books/new'
 
       const res = await fetch(url, {
-        method,
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
       })
 
       if (!res.ok) {
-        const error = await res.json()
-        throw new Error(error.error)
+        const errorData = await res.json()
+        throw new Error(errorData.error || 'Something went wrong')
       }
 
-      router.push(returnUrl || '/books')
+      router.push(returnUrl)
       router.refresh()
-    } catch (error) {
-      setError(error.message)
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setError(error.message)
+      } else {
+        setError('An unexpected error occurred')
+      }
     } finally {
       setLoading(false)
     }
@@ -70,9 +76,10 @@ export default function BookForm({ initialData, isEditing = false, returnUrl }: 
         </label>
         <input
           type="text"
+          id="title"
           name="title"
-          defaultValue={initialData?.title}
           required
+          defaultValue={initialData?.title}
           className="w-full px-3 py-2 border rounded-lg"
         />
       </div>
@@ -82,10 +89,11 @@ export default function BookForm({ initialData, isEditing = false, returnUrl }: 
           Description
         </label>
         <textarea
+          id="description"
           name="description"
-          defaultValue={initialData?.description}
           required
-          rows={4}
+          rows={5}
+          defaultValue={initialData?.description}
           className="w-full px-3 py-2 border rounded-lg"
         />
       </div>

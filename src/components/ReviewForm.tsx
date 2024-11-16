@@ -26,13 +26,13 @@ export default function ReviewForm({ bookId, onReviewAdded }: ReviewFormProps) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           content,
-          rating
+          rating: parseInt(rating)
         })
       })
 
       if (!res.ok) {
-        const error = await res.json()
-        throw new Error(error.error)
+        const errorData = await res.json()
+        throw new Error(errorData.error || 'Failed to submit review')
       }
 
       // Reset form
@@ -45,8 +45,12 @@ export default function ReviewForm({ bookId, onReviewAdded }: ReviewFormProps) {
       }
       
       router.refresh()
-    } catch (error) {
-      setError(error.message)
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setError(error.message)
+      } else {
+        setError('An unexpected error occurred while submitting the review')
+      }
     } finally {
       setLoading(false)
     }

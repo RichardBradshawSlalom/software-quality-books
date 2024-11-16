@@ -34,59 +34,71 @@ export default function RegisterPage() {
       }
 
       router.push('/login?registered=true')
-    } catch (error) {
-      setError(error.message)
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setError(error.message)
+      } else {
+        setError('An unexpected error occurred during registration')
+      }
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
-      <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
-        <h1 className="text-2xl font-bold text-center">Create an Account</h1>
-        
-        {error && (
-          <div className="bg-red-50 text-red-500 p-4 rounded-lg">
-            {error}
-          </div>
-        )}
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        <div>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            Create your account
+          </h2>
+        </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="name" className="block text-sm font-medium">
-              Name
-            </label>
-            <input
-              type="text"
-              name="name"
-              required
-              className="w-full px-3 py-2 border rounded-lg"
-            />
-          </div>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          {error && (
+            <div className="bg-red-50 text-red-500 p-4 rounded-lg">
+              {error}
+            </div>
+          )}
 
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium">
-              Email
-            </label>
-            <input
-              type="email"
-              name="email"
-              required
-              className="w-full px-3 py-2 border rounded-lg"
-            />
-          </div>
+          <div className="rounded-md shadow-sm space-y-4">
+            <div>
+              <label htmlFor="name" className="block text-sm font-medium">
+                Name
+              </label>
+              <input
+                id="name"
+                name="name"
+                type="text"
+                className="w-full px-3 py-2 border rounded-lg"
+              />
+            </div>
 
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium">
-              Password
-            </label>
-            <input
-              type="password"
-              name="password"
-              required
-              className="w-full px-3 py-2 border rounded-lg"
-            />
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium">
+                Email address
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                required
+                className="w-full px-3 py-2 border rounded-lg"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium">
+                Password
+              </label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                required
+                className="w-full px-3 py-2 border rounded-lg"
+              />
+            </div>
           </div>
 
           <button
@@ -94,7 +106,7 @@ export default function RegisterPage() {
             disabled={loading}
             className="w-full py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50"
           >
-            {loading ? 'Creating account...' : 'Register'}
+            {loading ? 'Creating account...' : 'Create account'}
           </button>
         </form>
 
