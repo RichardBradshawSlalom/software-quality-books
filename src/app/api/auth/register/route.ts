@@ -31,12 +31,17 @@ export async function POST(request: Request) {
         email,
         password: hashedPassword,
         name: name || null
+      },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        createdAt: true,
+        updatedAt: true
       }
     })
 
-    const { password: _password, ...userWithoutPassword } = user
-
-    return NextResponse.json(userWithoutPassword, { status: 201 })
+    return NextResponse.json(user, { status: 201 })
   } catch (error) {
     return NextResponse.json(
       { error: 'Error creating user' },
