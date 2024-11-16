@@ -1,6 +1,8 @@
 // app/api/books/route.ts
 import { NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
 import prisma from '@/lib/db'
+import { authOptions } from '@/lib/auth'
 
 export async function GET() {
   try {
@@ -19,12 +21,22 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const session = await getServerSession(authOptions)
+
+  if (!session) {
+    return NextResponse.json(
+      { error: 'Unauthorized' },
+      { status: 401 }
+    )
+  }
+
   try {
     const body = await request.json()
     const book = await prisma.book.create({
       data: {
         title: body.title,
-        description: body.description
+        description: body.description,
+        userId: session.user.id
       },
     })
     return NextResponse.json(book, { status: 201 })
