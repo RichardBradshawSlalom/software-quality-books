@@ -11,12 +11,10 @@ export async function GET() {
     const books = await prisma.book.findMany({
       orderBy: {
         createdAt: 'desc'
-      },
-      take: 3
+      }
     })
     return NextResponse.json(books)
   } catch (error) {
-    console.error('Error fetching books:', error)
     return NextResponse.json(
       { error: 'Failed to fetch books' },
       { status: 500 }
@@ -36,13 +34,22 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json()
+    
+    if (!body.title || !body.description) {
+      return NextResponse.json(
+        { error: 'Title and description are required' },
+        { status: 400 }
+      )
+    }
+
     const book = await prisma.book.create({
       data: {
         title: body.title,
         description: body.description,
         userId: session.user.id
-      },
+      }
     })
+
     return NextResponse.json(book, { status: 201 })
   } catch (error) {
     return NextResponse.json(

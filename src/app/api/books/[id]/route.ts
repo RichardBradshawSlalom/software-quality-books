@@ -10,9 +10,7 @@ export async function GET(
 ) {
   try {
     const book = await prisma.book.findUnique({
-      where: {
-        id: params.id
-      }
+      where: { id: params.id }
     })
 
     if (!book) {
@@ -45,7 +43,6 @@ export async function PUT(
   }
 
   try {
-    const body = await request.json()
     const book = await prisma.book.findUnique({
       where: { id: params.id }
     })
@@ -61,6 +58,15 @@ export async function PUT(
       return NextResponse.json(
         { error: 'Not authorized to edit this book' },
         { status: 403 }
+      )
+    }
+
+    const body = await request.json()
+    
+    if (!body.title || !body.description) {
+      return NextResponse.json(
+        { error: 'Title and description are required' },
+        { status: 400 }
       )
     }
 

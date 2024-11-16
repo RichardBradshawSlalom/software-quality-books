@@ -35,11 +35,11 @@ export default function BookForm({
 
     try {
       const url = isEditing 
-        ? `/api/books/${initialData?.id}/edit`
-        : '/api/books/new'
+        ? `/api/books/${initialData?.id}`
+        : '/api/books'
 
       const res = await fetch(url, {
-        method: 'POST',
+        method: isEditing ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
       })
