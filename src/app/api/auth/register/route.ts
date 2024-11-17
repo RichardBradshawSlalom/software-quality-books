@@ -30,17 +30,29 @@ export async function POST(request: Request) {
       data: {
         email,
         password: hashedPassword,
-        name: name || null
+        profile: {
+          create: {
+            name: name ?? null,
+            updatedAt: new Date(),
+          }
+        }
       },
       select: {
         id: true,
         email: true,
-        name: true
+        profile: true
       }
     })
 
-    return NextResponse.json(user, { status: 201 })
+    return NextResponse.json(
+      { 
+        id: user.id, 
+        email: user.email 
+      }, 
+      { status: 201 }
+    )
   } catch (error) {
+    console.error('Registration error:', error)
     return NextResponse.json(
       { error: 'Error creating user' },
       { status: 500 }

@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "postgres"
   url      = env("DATABASE_URL")
 }
 
@@ -47,17 +47,31 @@ model Session {
 
 model User {
   id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
+  email         String    @unique
   password      String
-  emailVerified DateTime?
-  image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  accounts      Account[]
-  sessions      Session[]
   books         Book[]
   reviews       Review[]
+  profile       Profile?  // One-to-one relation
+  accounts      Account[]
+  sessions      Session[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Profile {
+  id            String    @id @default(cuid())
+  name          String?
+  dateOfBirth   DateTime?
+  image         String?
+  bio           String?
+  bluesky       String?
+  linkedin      String?
+  github        String?
+  website       String?
+  userId        String    @unique  // Foreign key
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime
 }
 
 model VerificationToken {
