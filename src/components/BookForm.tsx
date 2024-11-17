@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { BookSchema, type CreateBookInput } from '@/lib/validations/book'
 
 interface BookFormProps {
   initialData?: {
@@ -18,58 +19,60 @@ export default function BookForm({
   isEditing = false,
   returnUrl = '/books'
 }: BookFormProps) {
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
   const router = useRouter()
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setError('')
-    setLoading(true)
+    setFieldErrors({})
 
     const formData = new FormData(e.currentTarget)
     const data = {
-      title: formData.get('title'),
-      description: formData.get('description')
+      title: formData.get('title') as string,
+      description: formData.get('description') as string,
     }
 
     try {
-      const url = isEditing 
-        ? `/api/books/${initialData?.id}`
-        : '/api/books'
+      BookSchema.parse(data)
+      setFieldErrors({})
 
-      const res = await fetch(url, {
-        method: isEditing ? 'PUT' : 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      })
+      const response = await fetch(
+        isEditing ? `/api/books/${initialData?.id}` : '/api/books',
+        {
+          method: isEditing ? 'PUT' : 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        }
+      )
 
-      if (!res.ok) {
-        const errorData = await res.json()
-        throw new Error(errorData.error || 'Something went wrong')
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error)
       }
 
-      router.push(returnUrl)
+      router.push(returnUrl || '/books')
       router.refresh()
-    } catch (error: unknown) {
+    } catch (error) {
       if (error instanceof Error) {
-        setError(error.message)
-      } else {
-        setError('An unexpected error occurred')
+        if (error.name === 'ZodError') {
+          const zodErrors = JSON.parse(error.message)
+          const newErrors: Record<string, string> = {}
+          
+          zodErrors.forEach((err: any) => {
+            const fieldName = err.path[0]
+            newErrors[fieldName] = `Must be less than ${err.maximum} characters`
+          })
+          
+          setFieldErrors(newErrors)
+        }
       }
-    } finally {
-      setLoading(false)
     }
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {error && (
-        <div className="bg-red-50 text-red-500 p-4 rounded-lg">
-          {error}
-        </div>
-      )}
-
       <div>
         <label htmlFor="title" className="block text-sm font-medium">
           Title
@@ -82,6 +85,9 @@ export default function BookForm({
           defaultValue={initialData?.title}
           className="w-full px-3 py-2 border rounded-lg"
         />
+        {fieldErrors.title && (
+          <p className="text-sm text-red-500">{fieldErrors.title}</p>
+        )}
       </div>
 
       <div>
@@ -96,14 +102,16 @@ export default function BookForm({
           defaultValue={initialData?.description}
           className="w-full px-3 py-2 border rounded-lg"
         />
+        {fieldErrors.description && (
+          <p className="text-sm text-red-500">{fieldErrors.description}</p>
+        )}
       </div>
 
       <button
         type="submit"
-        disabled={loading}
         className="w-full py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50"
       >
-        {loading ? 'Saving...' : isEditing ? 'Update Book' : 'Create Book'}
+        {isEditing ? 'Update Book' : 'Create Book'}
       </button>
     </form>
   )

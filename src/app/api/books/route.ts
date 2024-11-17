@@ -3,6 +3,8 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import prisma from '@/lib/db'
 import { authOptions } from '@/lib/auth'
+import { BookSchema } from '@/lib/validations/book'
+import { ZodError } from 'zod'
 
 export const dynamic = 'force-dynamic'
 
@@ -35,23 +37,26 @@ export async function POST(request: Request) {
   try {
     const body = await request.json()
     
-    if (!body.title || !body.description) {
-      return NextResponse.json(
-        { error: 'Title and description are required' },
-        { status: 400 }
-      )
-    }
+    // Validate the input
+    const validatedData = BookSchema.parse(body)
 
     const book = await prisma.book.create({
       data: {
-        title: body.title,
-        description: body.description,
+        title: validatedData.title,
+        description: validatedData.description,
         userId: session.user.id
       }
     })
 
     return NextResponse.json(book, { status: 201 })
   } catch (error) {
+    if (error instanceof ZodError) {
+      return NextResponse.json(
+        { error: error.errors[0].message },
+        { status: 400 }
+      )
+    }
+
     return NextResponse.json(
       { error: 'Failed to create book' },
       { status: 500 }

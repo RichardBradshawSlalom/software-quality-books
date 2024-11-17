@@ -3,6 +3,8 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import prisma from '@/lib/db'
 import { authOptions } from '@/lib/auth'
+import { BookSchema } from '@/lib/validations/book'
+import { ZodError } from 'zod'
 
 export async function GET(
   request: Request,
@@ -63,23 +65,26 @@ export async function PUT(
 
     const body = await request.json()
     
-    if (!body.title || !body.description) {
-      return NextResponse.json(
-        { error: 'Title and description are required' },
-        { status: 400 }
-      )
-    }
+    // Validate the input
+    const validatedData = BookSchema.parse(body)
 
     const updatedBook = await prisma.book.update({
       where: { id: params.id },
       data: {
-        title: body.title,
-        description: body.description
+        title: validatedData.title,
+        description: validatedData.description
       }
     })
 
     return NextResponse.json(updatedBook)
   } catch (error) {
+    if (error instanceof ZodError) {
+      return NextResponse.json(
+        { error: error.errors[0].message },
+        { status: 400 }
+      )
+    }
+
     return NextResponse.json(
       { error: 'Failed to update book' },
       { status: 500 }
