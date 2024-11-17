@@ -10,6 +10,9 @@ if [ "$VERCEL_ENV" = "production" ]; then
   # Generate Prisma client
   npx prisma generate
   
+  # Run migrations in production
+  npx prisma migrate deploy
+  
   # Build Next.js
   next build
 else
