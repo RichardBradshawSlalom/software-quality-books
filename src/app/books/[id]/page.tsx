@@ -13,7 +13,9 @@ interface Review {
   rating: number
   createdAt: string
   user: {
-    name: string | null
+    profile: {
+      name: string | null
+    }
     email: string | null
   }
 }
@@ -149,7 +151,7 @@ export default function BookPage({ params }: { params: { id: string } }) {
               <div key={review.id} className="bg-gray-50 p-4 rounded-lg">
                 <div className="flex items-center justify-between mb-2">
                   <div className="font-semibold">
-                    {review.user.name || review.user.email}
+                    {review.user.profile?.name || 'Anonymous'}
                   </div>
                   <div className="text-yellow-500">
                     {'★'.repeat(review.rating)}

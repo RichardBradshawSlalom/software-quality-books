@@ -15,8 +15,12 @@ export async function GET(
       include: {
         user: {
           select: {
-            name: true,
-            email: true
+            email: true,
+            profile: {
+              select: {
+                name: true
+              }
+            }
           }
         }
       },
@@ -58,8 +62,12 @@ export async function POST(
       include: {
         user: {
           select: {
-            name: true,
-            email: true
+            email: true,
+            profile: {
+              select: {
+                name: true
+              }
+            }
           }
         }
       }
