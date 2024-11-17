@@ -25,7 +25,7 @@ export default async function ProfilePage({
   return (
     <div className="container mx-auto p-6 max-w-4xl">
       <div className="bg-white shadow rounded-lg p-6">
-        <h1 className="text-2xl font-bold mb-6">{profile.name}'s Profile</h1>
+        <h1 className="text-6">{`${profile.name}'s Profile`}</h1>
         
         <div className="space-y-6">
           {/* Profile Image and Basic Info */}

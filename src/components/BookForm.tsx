@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { BookSchema, type CreateBookInput } from '@/lib/validations/book'
+import { BookSchema } from '@/lib/validations/book'
 
 interface BookFormProps {
   initialData?: {
