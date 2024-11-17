@@ -10,8 +10,8 @@ if [ "$VERCEL_ENV" = "production" ]; then
   # Generate Prisma client
   npx prisma generate
   
-  # Run migrations in production
-  npx prisma migrate deploy
+  # Push the schema to the database
+  npx prisma db push --skip-generate
   
   # Build Next.js
   next build
