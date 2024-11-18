@@ -1,7 +1,7 @@
 // app/books/[id]/page.tsx
 'use client'
 
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Book } from '@/types/book'
 import { useSession } from 'next-auth/react'

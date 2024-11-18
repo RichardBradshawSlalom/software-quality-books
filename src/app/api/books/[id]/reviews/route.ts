@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import prisma from '@/lib/db'
 import { authOptions } from '@/lib/auth'
 import { z } from 'zod'
+import { Prisma } from '@prisma/client'
 
 // Create a validation schema for reviews
 const ReviewSchema = z.object({
