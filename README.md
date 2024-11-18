@@ -108,6 +108,19 @@ npx prisma db push --force-reset
 npm run seed
 ```
 
+You can also run the Prisma Studio to view the database:
+```bash
+npx prisma studio
+```
+
+## VS Code Extensions
+You may want to install the following extensions
+- [Prisma](https://marketplace.visualstudio.com/items?itemName=Prisma.prisma) - Adds syntax highlighting and formatting for Prisma schema files
+- [Tailwind CSS IntelliSense](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss) - Provides autocomplete and syntax highlighting for Tailwind CSS classes
+- [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) - JavaScript/TypeScript linting
+- [Playwright Test for VSCode](https://marketplace.visualstudio.com/items?itemName=ms-playwright.playwright) - Run and debug Playwright tests
+
+
 ## Live Instance
 [Vercal Hosted Instance](https://software-quality-books-ivgsysti4-richard-bradshaws-projects.vercel.app/)
 
