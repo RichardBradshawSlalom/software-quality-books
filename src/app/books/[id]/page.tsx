@@ -126,8 +126,8 @@ export default function BookPage({ params }: { params: { id: string } }) {
         </div>
 
         <div className="bg-white shadow-lg rounded-lg p-6 mb-8">
-          <h1 className="text-3xl font-bold mb-4">{state.book.title}</h1>
-          <p className="text-gray-600 whitespace-pre-wrap">{state.book.description}</p>
+          <h1 className="text-3xl font-bold mb-4" data-testid='book-title'>{state.book.title}</h1>
+          <p className="text-gray-600 whitespace-pre-wrap" data-testid='book-description'>{state.book.description}</p>
         </div>
 
         <div className="mt-8">

@@ -1,5 +1,5 @@
 import { RegisterPage } from '../page-objects/register-page'
-import type { TestUser } from '../data-builders/user.builder'
+import type { TestUser } from '../data-builders/user-builder'
 
 export class RegistrationHelper {
   constructor(private registerPage: RegisterPage) {}

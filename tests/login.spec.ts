@@ -1,6 +1,6 @@
 import { test } from './fixtures/login-fixture'
 import { expect } from '@playwright/test'
-import { UserBuilder } from './data-builders/user.builder'
+import { UserBuilder } from './data-builders/user-builder'
 
 test.describe('Login Validation', () => {
 

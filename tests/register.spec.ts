@@ -1,4 +1,4 @@
-import { UserBuilder } from './data-builders/user.builder'
+import { UserBuilder } from './data-builders/user-builder'
 import { test, expect } from './fixtures/registration-fixture'
 
 test.describe('Registration', () => {

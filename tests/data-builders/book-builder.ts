@@ -1,8 +1,8 @@
 import { faker } from '@faker-js/faker'
 import { Book, Prisma } from '@prisma/client'
-import { TestDataBuilder } from './base.builder'
+import { TestDataBuilder } from './base-builder'
 import prisma from '../../src/lib/db'
-import { UserBuilder } from './user.builder'
+import { UserBuilder } from './user-builder'
 
 // Define required fields that must be present for every book
 type RequiredBookFields = {
