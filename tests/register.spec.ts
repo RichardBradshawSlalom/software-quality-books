@@ -1,5 +1,5 @@
 import { UserBuilder } from './data-builders/user.builder'
-import { test, expect } from './fixtures/test.fixture'
+import { test, expect } from './fixtures/registration.fixture'
 
 test.describe('Registration', () => {
   test('should show success notification when registering a new account', async ({ 
