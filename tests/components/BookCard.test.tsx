@@ -1,9 +1,9 @@
+import { jest } from '@jest/globals'
 import { render, screen } from '@testing-library/react'
 import { BookCard } from '@/components/BookCard'
 import { faker } from '@faker-js/faker'
 import userEvent from '@testing-library/user-event'
 import { generateTestId, TEST_DATA_IDS } from '@/utils/idHelpers'
-import { jest } from '@jest/globals'
 
 // Mock Next.js Link component
 jest.mock('next/link', () => {

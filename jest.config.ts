@@ -12,7 +12,8 @@ const config: Config = {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
   testMatch: [
-    '**/tests/components/**/*.test.{ts,tsx}'
+    '**/tests/components/*.test.{ts,tsx}',
+    '**/tests/pact/*.pact.spec.{ts,tsx}'
   ],
   testPathIgnorePatterns: [
     '<rootDir>/tests/e2e/',

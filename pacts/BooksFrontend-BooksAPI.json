@@ -1,0 +1,89 @@
+{
+  "consumer": {
+    "name": "BooksFrontend"
+  },
+  "interactions": [
+    {
+      "description": "a request for a specific book",
+      "providerState": "a book exists",
+      "request": {
+        "method": "GET",
+        "path": "/api/books/123e4567-e89b-12d3-a456-426614174000"
+      },
+      "response": {
+        "body": {
+          "createdAt": "2024-01-01T00:00:00.000Z",
+          "description": "A test book description",
+          "id": "123e4567-e89b-12d3-a456-426614174000",
+          "title": "Test Book",
+          "updatedAt": "2024-01-01T00:00:00.000Z",
+          "userId": "user123"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "matchingRules": {
+          "$.body": {
+            "match": "type"
+          },
+          "$.body.createdAt": {
+            "match": "type"
+          },
+          "$.body.description": {
+            "match": "type"
+          },
+          "$.body.id": {
+            "match": "type"
+          },
+          "$.body.title": {
+            "match": "type"
+          },
+          "$.body.updatedAt": {
+            "match": "type"
+          },
+          "$.body.userId": {
+            "match": "type"
+          }
+        },
+        "status": 200
+      }
+    },
+    {
+      "description": "a request for a non-existent book",
+      "providerState": "no book exists with ID",
+      "request": {
+        "method": "GET",
+        "path": "/api/books/nonexistent-id"
+      },
+      "response": {
+        "body": {
+          "error": "Book not found"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "matchingRules": {
+          "$.body": {
+            "match": "type"
+          }
+        },
+        "status": 404
+      }
+    }
+  ],
+  "metadata": {
+    "pact-js": {
+      "version": "11.0.2"
+    },
+    "pactRust": {
+      "ffi": "0.4.0",
+      "models": "1.0.4"
+    },
+    "pactSpecification": {
+      "version": "2.0.0"
+    }
+  },
+  "provider": {
+    "name": "BooksAPI"
+  }
+}
