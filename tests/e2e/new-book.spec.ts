@@ -1,6 +1,6 @@
-import { test } from './fixtures/new-book-fixture'
+import { test } from '../fixtures/new-book-fixture'
 import { expect } from '@playwright/test'
-import { UserBuilder } from './data-builders/user-builder'
+import { UserBuilder } from '../data-builders/user-builder'
 
 test.describe('New Book Validation', () => {
   let testUser: Awaited<ReturnType<UserBuilder['create']>>

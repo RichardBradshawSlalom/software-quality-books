@@ -1,7 +1,7 @@
-import { test } from './fixtures/homepage-fixture'
+import { test } from '../fixtures/homepage-fixture'
 import { expect } from '@playwright/test'
-import { UserBuilder } from './data-builders/user-builder'
-import { AuthHelper } from './helpers/auth.helper'
+import { UserBuilder } from '../data-builders/user-builder'
+import { AuthHelper } from '../helpers/auth.helper'
 
 test.describe('Homepage', () => {
   test('should show add book button when user is logged in', async ({ homePage, page }) => {

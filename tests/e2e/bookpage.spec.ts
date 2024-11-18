@@ -1,7 +1,7 @@
-import { test } from './fixtures/bookpage-fixture'
+import { test } from '../fixtures/bookpage-fixture'
 import { expect } from '@playwright/test'
-import { UserBuilder } from './data-builders/user-builder'
-import { BookBuilder } from './data-builders/book-builder'
+import { UserBuilder } from '../data-builders/user-builder'
+import { BookBuilder } from '../data-builders/book-builder'
 import { Book } from '@prisma/client'
 
 test.describe('Book page data', () => {

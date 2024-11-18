@@ -81,4 +81,12 @@ export default defineConfig({
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
   },
+
+  expect: {
+    toHaveScreenshot: {
+      // Snapshot settings
+      maxDiffPixels: 100,
+      threshold: 0.2,
+    }
+  },
 });
