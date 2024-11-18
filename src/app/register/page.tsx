@@ -1,45 +1,44 @@
 'use client'
 
-import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+import { useNotificationStore } from '@/lib/store/notification'
 import Link from 'next/link'
 
 export default function RegisterPage() {
   const router = useRouter()
-  const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const showNotification = useNotificationStore(state => state.showNotification)
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setError('')
     setLoading(true)
 
     const formData = new FormData(e.currentTarget)
-    const data = {
-      email: formData.get('email'),
-      password: formData.get('password'),
-      name: formData.get('name')
-    }
-
+    
     try {
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
+        body: JSON.stringify({
+          email: formData.get('email'),
+          password: formData.get('password'),
+          name: formData.get('name')
+        })
       })
 
       if (!res.ok) {
-        const error = await res.json()
-        throw new Error(error.error)
+        const data = await res.json()
+        throw new Error(data.error || 'Failed to register')
       }
 
-      router.push('/login?registered=true')
+      showNotification('Account created successfully! Please log in.', 'success')
+      router.push('/login')
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        setError(error.message)
-      } else {
-        setError('An unexpected error occurred during registration')
-      }
+      showNotification(
+        error instanceof Error ? error.message : 'An unexpected error occurred',
+        'error'
+      )
     } finally {
       setLoading(false)
     }
@@ -55,12 +54,6 @@ export default function RegisterPage() {
         </div>
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {error && (
-            <div className="bg-red-50 text-red-500 p-4 rounded-lg">
-              {error}
-            </div>
-          )}
-
           <div className="rounded-md shadow-sm space-y-4">
             <div>
               <label htmlFor="name" className="block text-sm font-medium">

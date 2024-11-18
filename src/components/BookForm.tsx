@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { BookSchema } from '@/lib/validations/book'
-import { ZodIssue } from 'zod'
+import { useNotificationStore } from '@/lib/store/notification'
 
 interface BookFormProps {
   initialData?: {
@@ -15,67 +15,56 @@ interface BookFormProps {
   returnUrl?: string
 }
 
-export default function BookForm({ 
-  initialData, 
-  isEditing = false,
-  returnUrl = '/books'
-}: BookFormProps) {
-  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+export default function BookForm({ initialData, isEditing, returnUrl = '/books' }: BookFormProps) {
   const router = useRouter()
+  const [loading, setLoading] = useState(false)
+  const showNotification = useNotificationStore(state => state.showNotification)
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setFieldErrors({})
+    setLoading(true)
 
     const formData = new FormData(e.currentTarget)
     const data = {
-      title: formData.get('title') as string,
-      description: formData.get('description') as string,
+      title: formData.get('title'),
+      description: formData.get('description')
     }
 
     try {
-      BookSchema.parse(data)
-      setFieldErrors({})
+      const validatedData = BookSchema.parse(data)
+      
+      const url = isEditing ? `/api/books/${initialData?.id}` : '/api/books'
+      const method = isEditing ? 'PUT' : 'POST'
 
-      const response = await fetch(
-        isEditing ? `/api/books/${initialData?.id}` : '/api/books',
-        {
-          method: isEditing ? 'PUT' : 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data),
-        }
-      )
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(validatedData)
+      })
 
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error)
+      if (!res.ok) {
+        const errorData = await res.json()
+        throw new Error(errorData.error || 'Failed to save book')
       }
 
-      router.push(returnUrl || '/books')
+      showNotification(
+        isEditing ? 'Book updated successfully!' : 'Book added successfully!',
+        'success'
+      )
+      router.push(returnUrl)
       router.refresh()
     } catch (error) {
-      if (error instanceof Error) {
-        if (error.name === 'ZodError') {
-          const zodErrors = JSON.parse(error.message) as ZodIssue[]
-          const newErrors: Record<string, string> = {}
-          
-          zodErrors.forEach((err: ZodIssue) => {
-            if (err.path[0]) {
-              const fieldName = err.path[0].toString()
-              newErrors[fieldName] = err.message || `Invalid ${fieldName}`
-            }
-          })
-          
-          setFieldErrors(newErrors)
-        }
-      }
+      showNotification(
+        error instanceof Error ? error.message : 'An unexpected error occurred',
+        'error'
+      )
+    } finally {
+      setLoading(false)
     }
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-6">
       <div>
         <label htmlFor="title" className="block text-sm font-medium">
           Title
@@ -88,9 +77,6 @@ export default function BookForm({
           defaultValue={initialData?.title}
           className="w-full px-3 py-2 border rounded-lg"
         />
-        {fieldErrors.title && (
-          <p className="text-sm text-red-500">{fieldErrors.title}</p>
-        )}
       </div>
 
       <div>
@@ -105,16 +91,14 @@ export default function BookForm({
           defaultValue={initialData?.description}
           className="w-full px-3 py-2 border rounded-lg"
         />
-        {fieldErrors.description && (
-          <p className="text-sm text-red-500">{fieldErrors.description}</p>
-        )}
       </div>
 
       <button
         type="submit"
-        className="w-full py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50"
+        disabled={loading}
+        className="w-full px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 disabled:bg-blue-300"
       >
-        {isEditing ? 'Update Book' : 'Create Book'}
+        {loading ? 'Saving...' : isEditing ? 'Update Book' : 'Add Book'}
       </button>
     </form>
   )

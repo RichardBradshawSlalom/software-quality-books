@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Navigation from '@/components/Navigation'
 import SessionProvider from '@/components/SessionProvider'
+import Notification from '@/components/Notification'
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,6 +22,7 @@ export default async function RootLayout({
       <body className={inter.className}>
         <SessionProvider>
           <Navigation />
+          <Notification />
           <main className="container mx-auto px-4 py-8">
             {children}
           </main>
