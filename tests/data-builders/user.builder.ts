@@ -45,8 +45,9 @@ export class UserBuilder extends TestDataBuilder<TestUser> {
   // Factory method to create in database
   async create() {
     const hashedPassword = await bcrypt.hash(this.data.password, 10)
+    const rawPassword = this.data.password  // Store the raw password
     
-    return await prisma.user.create({
+    const user = await prisma.user.create({
       data: {
         id: this.data.id,
         email: this.data.email,
@@ -61,6 +62,11 @@ export class UserBuilder extends TestDataBuilder<TestUser> {
         profile: true
       }
     })
+
+    return {
+      ...user,
+      password: rawPassword  // Return the raw password instead of the hashed one
+    }
   }
 
   // Factory method to delete from database
