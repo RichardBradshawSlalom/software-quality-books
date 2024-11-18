@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { Book } from '@/types/book'
 import { useSession } from 'next-auth/react'
 import ReviewForm from '@/components/ReviewForm'
+import DeleteBookButton from '@/components/DeleteBookButton'
 
 interface Review {
   id: string
@@ -112,12 +113,15 @@ export default function BookPage({ params }: { params: { id: string } }) {
             ← Back to Books
           </Link>
           {isOwner && (
-            <Link
-              href={`/books/${params.id}/edit`}
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-            >
-              Edit Book
-            </Link>
+            <div className="space-x-2">
+              <Link
+                href={`/books/${params.id}/edit`}
+                className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600"
+              >
+                Edit
+              </Link>
+              <DeleteBookButton bookId={params.id} />
+            </div>
           )}
         </div>
 
