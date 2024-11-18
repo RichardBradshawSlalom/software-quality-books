@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { BookSchema } from '@/lib/validations/book'
+import { ZodIssue } from 'zod'
 
 interface BookFormProps {
   initialData?: {
@@ -57,12 +58,14 @@ export default function BookForm({
     } catch (error) {
       if (error instanceof Error) {
         if (error.name === 'ZodError') {
-          const zodErrors = JSON.parse(error.message)
+          const zodErrors = JSON.parse(error.message) as ZodIssue[]
           const newErrors: Record<string, string> = {}
           
-          zodErrors.forEach((err: any) => {
-            const fieldName = err.path[0]
-            newErrors[fieldName] = `Must be less than ${err.maximum} characters`
+          zodErrors.forEach((err: ZodIssue) => {
+            if (err.path[0]) {
+              const fieldName = err.path[0].toString()
+              newErrors[fieldName] = err.message || `Invalid ${fieldName}`
+            }
           })
           
           setFieldErrors(newErrors)

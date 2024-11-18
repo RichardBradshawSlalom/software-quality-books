@@ -1,7 +1,7 @@
 export interface Profile {
   id: string
   name: string | null
-  dateOfBirth: string | null  // Will be Date in form, string in JSON
+  dateOfBirth: Date | string | null  // Accept both Date and string
   image: string | null
   bio: string | null
   bluesky: string | null
@@ -9,6 +9,6 @@ export interface Profile {
   github: string | null
   website: string | null
   userId: string
-  createdAt: string
-  updatedAt: string
+  createdAt: Date | string | null  // Accept both Date and string
+  updatedAt: Date | string | null  // Accept both Date and string
 } 
