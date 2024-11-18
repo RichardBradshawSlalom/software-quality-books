@@ -19,14 +19,19 @@ export class RegisterPage {
     await this.page.goto('/register')
   }
 
-  async register(email: string, password: string, name: string) {
+  async fillEmail(email: string) {
     await this.emailInput.fill(email)
-    await this.passwordInput.fill(password)
-    await this.nameInput.fill(name)
-    await this.submitButton.click()
   }
 
-  async expectSuccessNotification() {
-    await expect(this.page.getByText('Account created successfully!')).toBeVisible()
+  async fillPassword(password: string) {
+    await this.passwordInput.fill(password)
+  }
+
+  async fillName(name: string) {
+    await this.nameInput.fill(name)
+  }
+
+  async clickCreateAccountButton() {
+    await this.submitButton.click()
   }
 } 

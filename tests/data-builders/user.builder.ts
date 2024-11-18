@@ -5,7 +5,7 @@ import prisma from '../../src/lib/db'
 import bcrypt from 'bcrypt'
 
 // Define required fields that must be present for every user
-type TestUser = {
+export type TestUser = {
   id: string
   email: string
   password: string
