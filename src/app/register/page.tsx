@@ -1,30 +1,39 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import { useNotificationStore } from '@/lib/store/notification'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { useNotificationStore } from '@/lib/store/notification'
+import { RegisterSchema, type RegisterFormData } from '@/lib/validations/auth'
+import { ZodError } from 'zod'
+
+type FieldErrors = Partial<Record<keyof RegisterFormData, string>>
 
 export default function RegisterPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
   const showNotification = useNotificationStore(state => state.showNotification)
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setLoading(true)
+    setFieldErrors({})
 
     const formData = new FormData(e.currentTarget)
+    const data = {
+      email: formData.get('email'),
+      password: formData.get('password'),
+      name: formData.get('name')
+    }
     
     try {
+      const validatedData = RegisterSchema.parse(data)
+      
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: formData.get('email'),
-          password: formData.get('password'),
-          name: formData.get('name')
-        })
+        body: JSON.stringify(validatedData)
       })
 
       if (!res.ok) {
@@ -34,11 +43,21 @@ export default function RegisterPage() {
 
       showNotification('Account created successfully! Please log in.', 'success')
       router.push('/login')
-    } catch (error: unknown) {
-      showNotification(
-        error instanceof Error ? error.message : 'An unexpected error occurred',
-        'error'
-      )
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const errors: FieldErrors = {}
+        error.errors.forEach((err) => {
+          if (err.path[0]) {
+            errors[err.path[0] as keyof RegisterFormData] = err.message
+          }
+        })
+        setFieldErrors(errors)
+      } else {
+        showNotification(
+          error instanceof Error ? error.message : 'An unexpected error occurred',
+          'error'
+        )
+      }
     } finally {
       setLoading(false)
     }
@@ -53,7 +72,11 @@ export default function RegisterPage() {
           </h2>
         </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form 
+          className="mt-8 space-y-6" 
+          onSubmit={handleSubmit} 
+          noValidate
+        >
           <div className="rounded-md shadow-sm space-y-4">
             <div>
               <label htmlFor="name" className="block text-sm font-medium">
@@ -65,6 +88,9 @@ export default function RegisterPage() {
                 type="text"
                 className="w-full px-3 py-2 border rounded-lg"
               />
+              {fieldErrors.name && (
+                <p className="mt-1 text-sm text-red-500">{fieldErrors.name}</p>
+              )}
             </div>
 
             <div>
@@ -75,9 +101,11 @@ export default function RegisterPage() {
                 id="email"
                 name="email"
                 type="email"
-                required
                 className="w-full px-3 py-2 border rounded-lg"
               />
+              {fieldErrors.email && (
+                <p className="mt-1 text-sm text-red-500">{fieldErrors.email}</p>
+              )}
             </div>
 
             <div>
@@ -88,9 +116,11 @@ export default function RegisterPage() {
                 id="password"
                 name="password"
                 type="password"
-                required
                 className="w-full px-3 py-2 border rounded-lg"
               />
+              {fieldErrors.password && (
+                <p className="mt-1 text-sm text-red-500">{fieldErrors.password}</p>
+              )}
             </div>
           </div>
 
@@ -101,14 +131,13 @@ export default function RegisterPage() {
           >
             {loading ? 'Creating account...' : 'Create account'}
           </button>
-        </form>
 
-        <p className="text-center text-sm">
-          Already have an account?{' '}
-          <Link href="/login" className="text-blue-500 hover:underline">
-            Sign in
-          </Link>
-        </p>
+          <div className="text-center">
+            <Link href="/login" className="text-blue-500 hover:underline">
+              Already have an account? Sign in
+            </Link>
+          </div>
+        </form>
       </div>
     </div>
   )
