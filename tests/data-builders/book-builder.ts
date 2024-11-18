@@ -81,4 +81,11 @@ export class BookBuilder extends TestDataBuilder<Book> {
   build(): Book {
     return this.data as Book
   }
+
+  // Add this method to your existing BookBuilder class
+  static async findByTitle(title: string) {
+    return await prisma.book.findMany({
+      where: { title }
+    })
+  }
 }

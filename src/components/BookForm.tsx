@@ -64,7 +64,11 @@ export default function BookForm({ initialData, isEditing, returnUrl = '/books' 
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form 
+      onSubmit={handleSubmit}
+      noValidate
+      className="space-y-4"
+    >
       <div>
         <label htmlFor="title" className="block text-sm font-medium">
           Title
