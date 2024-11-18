@@ -1,43 +1,135 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Software Quality Books
+
+A web application for managing and reviewing software quality books.
+
+## Prerequisites
+
+Before you begin, ensure you have the following installed:
+- [Node.js](https://nodejs.org/) (v18 or higher)
+- [npm](https://www.npmjs.com/) (comes with Node.js)
+- [Git](https://git-scm.com/)
+- A code editor (we recommend [VS Code](https://code.visualstudio.com/))
 
 ## Getting Started
 
-First, run the development server:
+1. Clone the repository:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/FriendlyTester/software-quality-books
+cd software-quality-books
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Set up your environment variables:
+   - Copy `.env.example` to `.env`:
+   ```bash
+   cp .env.example .env
+   ```
+   - Update the following variables in `.env`:
+     - `DATABASE_URL`: Your database connection string
+     - `NEXTAUTH_SECRET`: Generate with `openssl rand -base64 32`
+     - `NEXTAUTH_URL`: `http://localhost:3000` for local development
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Set up the database:
+```bash
+npx prisma db push
+npx prisma generate
+```
 
-## Learn More
+5. Seed the database with initial data:
+```bash
+npm run seed
+```
 
-To learn more about Next.js, take a look at the following resources:
+6. Start the development server:
+```bash
+npm run dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+7. Open [http://localhost:3000](http://localhost:3000) in your browser
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Test Users
 
-## Deploy on Vercel
+After seeding the database, you can log in with these test accounts:
+- Email: `test@test.com` / Password: `password123`
+- Email: `bob@example.com` / Password: `password123`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Running Tests
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+# Run end-to-end tests
+npm run test:e2e
+```
+
+## Project Structure
+
+```
+├── src/
+│   ├── app/             # Next.js app router pages
+│   ├── components/      # Reusable React components
+│   ├── lib/            # Utility functions and configurations
+│   ├── types/          # TypeScript type definitions
+│   └── utils/          # Helper functions
+├── prisma/             # Database schema and migrations
+├── tests/              # End-to-end tests
+│   ├── fixtures/       # Test fixtures
+│   ├── helpers/        # Test helper functions
+│   └── page-objects/   # Page object models
+└── public/             # Static files
+```
+
+## Key Features
+
+- User authentication with NextAuth.js
+- Book management (Create, Read, Update, Delete)
+- Book reviews and ratings
+- User profiles
+- End-to-end testing with Playwright
+
+## Technology Stack
+
+- [Next.js 14](https://nextjs.org/)
+- [React](https://reactjs.org/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Prisma](https://www.prisma.io/)
+- [NextAuth.js](https://next-auth.js.org/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [Playwright](https://playwright.dev/)
+
+## Common Issues & Solutions
+
+### Database Issues
+If you encounter database-related errors:
+```bash
+# Reset the database
+npx prisma db push --force-reset
+npm run seed
+```
+
+### Authentication Issues
+Make sure your environment variables are set correctly in `.env`
+
+## Development Workflow
+
+1. Create a new branch for your feature/fix
+2. Make your changes
+3. Run tests to ensure nothing is broken
+4. Create a pull request
+```
+
+## Additional Resources
+
+- [Next.js Documentation](https://nextjs.org/docs)
+- [Prisma Documentation](https://www.prisma.io/docs)
+- [NextAuth.js Documentation](https://next-auth.js.org)
+- [Tailwind CSS Documentation](https://tailwindcss.com/docs)
+- [Playwright Documentation](https://playwright.dev/docs/intro)
 
 
+## License
 
-## Richard
-
-Install Prisma extension
-Prisma studio
+This project is part of a training course and is intended for educational purposes only.
