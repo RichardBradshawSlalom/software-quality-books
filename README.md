@@ -100,8 +100,6 @@ npm run test:e2e
 - [Tailwind CSS](https://tailwindcss.com/)
 - [Playwright](https://playwright.dev/)
 
-## Common Issues & Solutions
-
 ### Database Issues
 If you encounter database-related errors:
 ```bash
@@ -110,16 +108,8 @@ npx prisma db push --force-reset
 npm run seed
 ```
 
-### Authentication Issues
-Make sure your environment variables are set correctly in `.env`
-
-## Development Workflow
-
-1. Create a new branch for your feature/fix
-2. Make your changes
-3. Run tests to ensure nothing is broken
-4. Create a pull request
-```
+## Live Instance
+[Vercal Hosted Instance](https://software-quality-books-ivgsysti4-richard-bradshaws-projects.vercel.app/)
 
 ## Additional Resources
 
