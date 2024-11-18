@@ -12,4 +12,13 @@ export const RegisterSchema = z.object({
     .max(100, 'Name is too long')
 })
 
-export type RegisterFormData = z.infer<typeof RegisterSchema> 
+export const LoginSchema = z.object({
+  email: z.string()
+    .min(1, 'Email is required')
+    .email('Invalid email address'),
+  password: z.string()
+    .min(1, 'Password is required')
+})
+
+export type RegisterFormData = z.infer<typeof RegisterSchema>
+export type LoginFormData = z.infer<typeof LoginSchema> 

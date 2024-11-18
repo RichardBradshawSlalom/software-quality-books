@@ -4,24 +4,45 @@ import { signIn } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useState, Suspense } from 'react'
 import Link from 'next/link'
+import { LoginSchema } from '@/lib/validations/auth'
 
 function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [fieldErrors, setFieldErrors] = useState<{
+    email?: string;
+    password?: string;
+  }>({})
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setError('')
+    setFieldErrors({})
     setLoading(true)
 
     const formData = new FormData(e.currentTarget)
-    
+    const email = formData.get('email') as string
+    const password = formData.get('password') as string
+
+    // Validate using Zod schema
+    const result = LoginSchema.safeParse({ email, password })
+    if (!result.success) {
+      const errors = result.error.errors.reduce((acc, curr) => {
+        acc[curr.path[0] as 'email' | 'password'] = curr.message
+        return acc
+      }, {} as { email?: string; password?: string })
+      
+      setFieldErrors(errors)
+      setLoading(false)
+      return
+    }
+
     try {
       const res = await signIn('credentials', {
-        email: formData.get('email'),
-        password: formData.get('password'),
+        email,
+        password,
         redirect: false
       })
 
@@ -52,7 +73,7 @@ function LoginForm() {
           </h2>
         </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit} noValidate>
           {error && (
             <div className="bg-red-50 text-red-500 p-4 rounded-lg">
               {error}
@@ -62,15 +83,17 @@ function LoginForm() {
           <div className="rounded-md shadow-sm space-y-4">
             <div>
               <label htmlFor="email" className="block text-sm font-medium">
-                Email address
+                Email
               </label>
               <input
                 id="email"
                 name="email"
                 type="email"
-                required
                 className="w-full px-3 py-2 border rounded-lg"
               />
+              {fieldErrors.email && (
+                <p className="mt-1 text-sm text-red-500">{fieldErrors.email}</p>
+              )}
             </div>
 
             <div>
@@ -81,16 +104,18 @@ function LoginForm() {
                 id="password"
                 name="password"
                 type="password"
-                required
                 className="w-full px-3 py-2 border rounded-lg"
               />
+              {fieldErrors.password && (
+                <p className="mt-1 text-sm text-red-500">{fieldErrors.password}</p>
+              )}
             </div>
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50"
+            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-blue-300"
           >
             {loading ? 'Signing in...' : 'Sign In'}
           </button>
