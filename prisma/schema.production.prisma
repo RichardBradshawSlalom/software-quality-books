@@ -92,4 +92,7 @@ model Review {
   userId    String
   book      Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Add unique constraint
+  @@unique([userId, bookId], name: "userBookReview")
 }

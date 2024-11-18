@@ -8,44 +8,82 @@ interface ReviewFormProps {
   onReviewAdded?: () => void
 }
 
+interface ValidationErrors {
+  content?: string
+  rating?: string
+}
+
 export default function ReviewForm({ bookId, onReviewAdded }: ReviewFormProps) {
   const router = useRouter()
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [content, setContent] = useState('')
   const [rating, setRating] = useState('')
+  const [validationErrors, setValidationErrors] = useState<ValidationErrors>({})
+
+  const validateForm = (): boolean => {
+    const errors: ValidationErrors = {}
+    
+    if (!content.trim()) {
+      errors.content = 'Review content is required'
+    }
+    
+    if (!rating) {
+      errors.rating = 'Rating is required'
+    }
+
+    setValidationErrors(errors)
+    return Object.keys(errors).length === 0
+  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setError('')
+    setValidationErrors({})
+
+    if (!validateForm()) {
+      return
+    }
+
     setLoading(true)
 
     try {
+      console.log('Submitting review:', { content, rating })
+      
       const res = await fetch(`/api/books/${bookId}/reviews`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          content,
-          rating: parseInt(rating)
+          content: content.trim(),
+          rating: Number(rating)
         })
       })
 
+      const data = await res.json()
+      console.log('Response:', data)
+
       if (!res.ok) {
-        const errorData = await res.json()
-        throw new Error(errorData.error || 'Failed to submit review')
+        if (res.status === 400) {
+          setValidationErrors({
+            [data.error.includes('content') ? 'content' : 
+              data.error.includes('rating') ? 'rating' : 'general']: data.error
+          })
+          return
+        }
+        throw new Error(data.error || 'Failed to submit review')
       }
 
       // Reset form
       setContent('')
       setRating('')
       
-      // Call the callback to refresh the reviews
       if (onReviewAdded) {
         onReviewAdded()
       }
       
       router.refresh()
     } catch (error: unknown) {
+      console.error('Review submission error:', error)
       if (error instanceof Error) {
         setError(error.message)
       } else {
@@ -57,7 +95,7 @@ export default function ReviewForm({ bookId, onReviewAdded }: ReviewFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4" noValidate>
       {error && (
         <div className="bg-red-50 text-red-500 p-4 rounded-lg">
           {error}
@@ -69,10 +107,10 @@ export default function ReviewForm({ bookId, onReviewAdded }: ReviewFormProps) {
           Rating
         </label>
         <select
+          id="rating"
           name="rating"
           value={rating}
           onChange={(e) => setRating(e.target.value)}
-          required
           className="w-full px-3 py-2 border rounded-lg"
         >
           <option value="">Select a rating</option>
@@ -82,6 +120,9 @@ export default function ReviewForm({ bookId, onReviewAdded }: ReviewFormProps) {
             </option>
           ))}
         </select>
+        {validationErrors.rating && (
+          <p className="mt-1 text-sm text-red-500">{validationErrors.rating}</p>
+        )}
       </div>
 
       <div>
@@ -89,14 +130,17 @@ export default function ReviewForm({ bookId, onReviewAdded }: ReviewFormProps) {
           Review
         </label>
         <textarea
+          id="content"
           name="content"
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          required
           rows={4}
           className="w-full px-3 py-2 border rounded-lg"
           placeholder="Write your review here..."
         />
+        {validationErrors.content && (
+          <p className="mt-1 text-sm text-red-500">{validationErrors.content}</p>
+        )}
       </div>
 
       <button

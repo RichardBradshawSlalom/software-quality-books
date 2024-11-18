@@ -1,7 +1,7 @@
 // app/books/[id]/page.tsx
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import Link from 'next/link'
 import { Book } from '@/types/book'
 import { useSession } from 'next-auth/react'
@@ -14,6 +14,7 @@ interface Review {
   rating: number
   createdAt: string
   user: {
+    id: string
     profile: {
       name: string | null
     }
@@ -68,6 +69,10 @@ export default function BookPage({ params }: { params: { id: string } }) {
       }))
     }
   }
+
+  const hasUserReviewed = state.reviews.some(review => 
+    review.user?.id === session?.user?.id
+  )
 
   useEffect(() => {
     fetchData()
@@ -134,13 +139,19 @@ export default function BookPage({ params }: { params: { id: string } }) {
           <h2 className="text-2xl font-bold mb-4">Reviews</h2>
           
           {session ? (
-            <div className="mb-8">
-              <h3 className="text-lg font-semibold mb-4">Add a Review</h3>
-              <ReviewForm 
-                bookId={params.id} 
-                onReviewAdded={fetchData}
-              />
-            </div>
+            hasUserReviewed ? (
+              <p className="text-gray-600 italic mb-8">
+                You have already reviewed this book
+              </p>
+            ) : (
+              <div className="mb-8">
+                <h3 className="text-lg font-semibold mb-4">Add a Review</h3>
+                <ReviewForm 
+                  bookId={params.id} 
+                  onReviewAdded={fetchData}
+                />
+              </div>
+            )
           ) : (
             <p className="mb-8">
               <Link href="/login" className="text-blue-500 hover:underline">
