@@ -1,4 +1,4 @@
-import { RegisterPage } from '../page-objects/register.page'
+import { RegisterPage } from '../page-objects/register-page'
 import type { TestUser } from '../data-builders/user.builder'
 
 export class RegistrationHelper {
