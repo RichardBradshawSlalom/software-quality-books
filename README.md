@@ -27,7 +27,7 @@ npm install
 3. Set up your environment variables:
    - Copy `.env.example` to `.env`:
    ```bash
-   cp .env.example .env
+   cp .env.development .env
    ```
    - Update the following variables in `.env`:
      - `DATABASE_URL`: Your database connection string
