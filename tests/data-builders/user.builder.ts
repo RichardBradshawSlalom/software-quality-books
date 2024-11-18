@@ -37,6 +37,11 @@ export class UserBuilder extends TestDataBuilder<TestUser> {
     return this.with('password', password)
   }
 
+  withName(name: string): UserBuilder {
+    this.data.name = name;
+    return this;
+  }
+
   // Factory method to create in database
   async create() {
     const hashedPassword = await bcrypt.hash(this.data.password, 10)
