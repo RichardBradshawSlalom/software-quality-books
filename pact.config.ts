@@ -1,13 +1,10 @@
-import { PactConfig } from '@pact-foundation/pact'
-import path from 'path'
+import path from 'path';
 
-const config: PactConfig = {
-  consumer: 'BooksFrontend',
-  provider: 'BooksAPI',
-  log: path.resolve(process.cwd(), 'logs', 'pact.log'),
-  dir: path.resolve(process.cwd(), 'pacts'),
-  logLevel: 'warn',
-  spec: 3,
-}
+const config = {
+  consumer: 'YourConsumer',   // Consumer name
+  provider: 'YourProvider',   // Provider name
+  dir: path.resolve(__dirname, 'pacts'),  // Path to store pact files
+  logLevel: 'INFO',           // Log level for pact mock service
+};
 
-export default config 
+export default config;

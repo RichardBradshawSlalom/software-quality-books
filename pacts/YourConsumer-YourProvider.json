@@ -1,0 +1,143 @@
+{
+  "consumer": {
+    "name": "YourConsumer"
+  },
+  "interactions": [
+    {
+      "description": "a request for a specific book",
+      "providerStates": [
+        {
+          "name": "a book exists"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/api/books/123e4567-e89b-12d3-a456-426614174000"
+      },
+      "response": {
+        "body": {
+          "createdAt": "2024-01-01T00:00:00.000Z",
+          "description": "A test book description",
+          "id": "123e4567-e89b-12d3-a456-426614174000",
+          "title": "Test Book",
+          "updatedAt": "2024-01-01T00:00:00.000Z",
+          "userId": "user123"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "matchingRules": {
+          "body": {
+            "$": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.createdAt": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.description": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.id": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.title": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.updatedAt": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.userId": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          },
+          "header": {}
+        },
+        "status": 200
+      }
+    },
+    {
+      "description": "a request for a non-existent book",
+      "providerStates": [
+        {
+          "name": "no book exists with ID"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/api/books/nonexistent-id"
+      },
+      "response": {
+        "body": {
+          "error": "Book not found"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "matchingRules": {
+          "body": {
+            "$": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          },
+          "header": {}
+        },
+        "status": 404
+      }
+    }
+  ],
+  "metadata": {
+    "pact-js": {
+      "version": "11.0.2"
+    },
+    "pactRust": {
+      "ffi": "0.4.0",
+      "models": "1.0.4"
+    },
+    "pactSpecification": {
+      "version": "3.0.0"
+    }
+  },
+  "provider": {
+    "name": "YourProvider"
+  }
+}
