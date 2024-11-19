@@ -122,7 +122,7 @@ You may want to install the following extensions
 
 
 ## Live Instance
-[Vercal Hosted Instance](https://software-quality-books-ivgsysti4-richard-bradshaws-projects.vercel.app/)
+[Vercal Hosted Instance](https://software-quality-books.vercel.app/)
 
 ## Additional Resources
 
