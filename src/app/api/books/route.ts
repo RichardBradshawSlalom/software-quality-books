@@ -12,15 +12,13 @@ export async function GET() {
   try {
     const books = await prisma.book.findMany({
       orderBy: {
-        createdAt: 'desc'
-      }
+        createdAt: 'desc',
+      },
     })
     return NextResponse.json(books)
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to fetch books' },
-      { status: 500 }
-    )
+    console.error('[ERROR]: Failed to fetch books - ', error)
+    return NextResponse.json({ error: 'Failed to fetch books' }, { status: 500 })
   }
 }
 
@@ -28,15 +26,13 @@ export async function POST(request: Request) {
   const session = await getServerSession(authOptions)
 
   if (!session) {
-    return NextResponse.json(
-      { error: 'Unauthorized' },
-      { status: 401 }
-    )
+    console.error('[ERROR]: Unauthorized')
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
   try {
     const body = await request.json()
-    
+
     // Validate the input
     const validatedData = BookSchema.parse(body)
 
@@ -44,22 +40,17 @@ export async function POST(request: Request) {
       data: {
         title: validatedData.title,
         description: validatedData.description,
-        userId: session.user.id
-      }
+        userId: session.user.id,
+      },
     })
 
     return NextResponse.json(book, { status: 201 })
   } catch (error) {
     if (error instanceof ZodError) {
-      return NextResponse.json(
-        { error: error.errors[0].message },
-        { status: 400 }
-      )
+      console.error('[ERROR]: ', error)
+      return NextResponse.json({ error: error.errors[0].message }, { status: 400 })
     }
-
-    return NextResponse.json(
-      { error: 'Failed to create book' },
-      { status: 500 }
-    )
+    console.error('[ERROR]: Failed to create book - ', error)
+    return NextResponse.json({ error: 'Failed to create book' }, { status: 500 })
   }
 }
