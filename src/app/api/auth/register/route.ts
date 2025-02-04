@@ -7,7 +7,7 @@ export async function POST(request: Request) {
     const { email, password, name } = await request.json()
 
     if (!email || !password) {
-      console.error('[ERROR]: No email or no password entered')
+      console.error('[ERROR] - No email or no password entered')
       return NextResponse.json({ error: 'Email and password are required' }, { status: 400 })
     }
 
@@ -16,7 +16,7 @@ export async function POST(request: Request) {
     })
 
     if (existingUser) {
-      console.error('[ERROR]: User already exists')
+      console.error('[ERROR] - User already exists')
       return NextResponse.json({ error: 'User already exists' }, { status: 400 })
     }
 
@@ -48,7 +48,7 @@ export async function POST(request: Request) {
       { status: 201 }
     )
   } catch (error) {
-    console.error('[ERROR]: Registration error - ', error)
+    console.error('[ERROR] - Registration error - ', error)
     return NextResponse.json({ error: 'Error creating user' }, { status: 500 })
   }
 }

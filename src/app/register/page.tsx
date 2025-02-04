@@ -13,10 +13,11 @@ export default function RegisterPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
-  const showNotification = useNotificationStore(state => state.showNotification)
+  const showNotification = useNotificationStore((state) => state.showNotification)
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    console.log('[LOG] - Form submitted')
     setLoading(true)
     setFieldErrors({})
 
@@ -24,22 +25,25 @@ export default function RegisterPage() {
     const data = {
       email: formData.get('email'),
       password: formData.get('password'),
-      name: formData.get('name')
+      name: formData.get('name'),
     }
-    
+
     try {
       const validatedData = RegisterSchema.parse(data)
-      
+
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(validatedData)
+        body: JSON.stringify(validatedData),
       })
 
       if (!res.ok) {
+        console.error('[ERROR] - Failed to register')
         const data = await res.json()
         throw new Error(data.error || 'Failed to register')
       }
+
+      console.log('[LOG] - Registration successful')
 
       showNotification('Account created successfully! Please log in.', 'success')
       router.push('/login')
@@ -53,12 +57,11 @@ export default function RegisterPage() {
         })
         setFieldErrors(errors)
       } else {
-        showNotification(
-          error instanceof Error ? error.message : 'An unexpected error occurred',
-          'error'
-        )
+        console.error('[ERROR] - Registration error:', error)
+        showNotification(error instanceof Error ? error.message : 'An unexpected error occurred', 'error')
       }
     } finally {
+      console.log('[LOG] - Form submission completed')
       setLoading(false)
     }
   }
@@ -67,60 +70,33 @@ export default function RegisterPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Create your account
-          </h2>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Create your account</h2>
         </div>
 
-        <form 
-          className="mt-8 space-y-6" 
-          onSubmit={handleSubmit} 
-          noValidate
-        >
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit} noValidate>
           <div className="rounded-md shadow-sm space-y-4">
             <div>
               <label htmlFor="name" className="block text-sm font-medium">
                 Name
               </label>
-              <input
-                id="name"
-                name="name"
-                type="text"
-                className="w-full px-3 py-2 border rounded-lg"
-              />
-              {fieldErrors.name && (
-                <p className="mt-1 text-sm text-red-500">{fieldErrors.name}</p>
-              )}
+              <input id="name" name="name" type="text" className="w-full px-3 py-2 border rounded-lg" />
+              {fieldErrors.name && <p className="mt-1 text-sm text-red-500">{fieldErrors.name}</p>}
             </div>
 
             <div>
               <label htmlFor="email" className="block text-sm font-medium">
                 Email address
               </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                className="w-full px-3 py-2 border rounded-lg"
-              />
-              {fieldErrors.email && (
-                <p className="mt-1 text-sm text-red-500">{fieldErrors.email}</p>
-              )}
+              <input id="email" name="email" type="email" className="w-full px-3 py-2 border rounded-lg" />
+              {fieldErrors.email && <p className="mt-1 text-sm text-red-500">{fieldErrors.email}</p>}
             </div>
 
             <div>
               <label htmlFor="password" className="block text-sm font-medium">
                 Password
               </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                className="w-full px-3 py-2 border rounded-lg"
-              />
-              {fieldErrors.password && (
-                <p className="mt-1 text-sm text-red-500">{fieldErrors.password}</p>
-              )}
+              <input id="password" name="password" type="password" className="w-full px-3 py-2 border rounded-lg" />
+              {fieldErrors.password && <p className="mt-1 text-sm text-red-500">{fieldErrors.password}</p>}
             </div>
           </div>
 
@@ -141,4 +117,4 @@ export default function RegisterPage() {
       </div>
     </div>
   )
-} 
+}

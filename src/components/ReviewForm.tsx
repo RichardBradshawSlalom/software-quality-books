@@ -23,11 +23,11 @@ export default function ReviewForm({ bookId, onReviewAdded }: ReviewFormProps) {
 
   const validateForm = (): boolean => {
     const errors: ValidationErrors = {}
-    
+
     if (!content.trim()) {
       errors.content = 'Review content is required'
     }
-    
+
     if (!rating) {
       errors.rating = 'Rating is required'
     }
@@ -38,6 +38,7 @@ export default function ReviewForm({ bookId, onReviewAdded }: ReviewFormProps) {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    console.log('[LOG] - Form submitted')
     setError('')
     setValidationErrors({})
 
@@ -49,14 +50,14 @@ export default function ReviewForm({ bookId, onReviewAdded }: ReviewFormProps) {
 
     try {
       console.log('Submitting review:', { content, rating })
-      
+
       const res = await fetch(`/api/books/${bookId}/reviews`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           content: content.trim(),
-          rating: Number(rating)
-        })
+          rating: Number(rating),
+        }),
       })
 
       const data = await res.json()
@@ -65,42 +66,41 @@ export default function ReviewForm({ bookId, onReviewAdded }: ReviewFormProps) {
       if (!res.ok) {
         if (res.status === 400) {
           setValidationErrors({
-            [data.error.includes('content') ? 'content' : 
-              data.error.includes('rating') ? 'rating' : 'general']: data.error
+            [data.error.includes('content') ? 'content' : data.error.includes('rating') ? 'rating' : 'general']:
+              data.error,
           })
           return
         }
+        console.error('[ERROR] - Failed to submit review:', data.error)
         throw new Error(data.error || 'Failed to submit review')
       }
 
       // Reset form
       setContent('')
       setRating('')
-      
+
       if (onReviewAdded) {
         onReviewAdded()
       }
-      
+
       router.refresh()
     } catch (error: unknown) {
-      console.error('Review submission error:', error)
+      console.error('[ERROR] - Review submission error:', error)
       if (error instanceof Error) {
         setError(error.message)
       } else {
+        console.error('[ERROR] - Error submitting review:', error)
         setError('An unexpected error occurred while submitting the review')
       }
     } finally {
       setLoading(false)
+      console.log('[LOG] - Form submission completed')
     }
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-      {error && (
-        <div className="bg-red-50 text-red-500 p-4 rounded-lg">
-          {error}
-        </div>
-      )}
+      {error && <div className="bg-red-50 text-red-500 p-4 rounded-lg">{error}</div>}
 
       <div>
         <label htmlFor="rating" className="block text-sm font-medium">
@@ -120,9 +120,7 @@ export default function ReviewForm({ bookId, onReviewAdded }: ReviewFormProps) {
             </option>
           ))}
         </select>
-        {validationErrors.rating && (
-          <p className="mt-1 text-sm text-red-500">{validationErrors.rating}</p>
-        )}
+        {validationErrors.rating && <p className="mt-1 text-sm text-red-500">{validationErrors.rating}</p>}
       </div>
 
       <div>
@@ -138,9 +136,7 @@ export default function ReviewForm({ bookId, onReviewAdded }: ReviewFormProps) {
           className="w-full px-3 py-2 border rounded-lg"
           placeholder="Write your review here..."
         />
-        {validationErrors.content && (
-          <p className="mt-1 text-sm text-red-500">{validationErrors.content}</p>
-        )}
+        {validationErrors.content && <p className="mt-1 text-sm text-red-500">{validationErrors.content}</p>}
       </div>
 
       <button
@@ -152,4 +148,4 @@ export default function ReviewForm({ bookId, onReviewAdded }: ReviewFormProps) {
       </button>
     </form>
   )
-} 
+}

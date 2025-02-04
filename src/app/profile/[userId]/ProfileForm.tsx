@@ -1,31 +1,32 @@
-'use client';
+'use client'
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Profile } from "@/types/profile";
-import { ProfileSchema, type ProfileFormData } from "@/lib/validations/profile";
-import { ZodError } from "zod";
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { Profile } from '@/types/profile'
+import { ProfileSchema, type ProfileFormData } from '@/lib/validations/profile'
+import { ZodError } from 'zod'
 
-type FieldErrors = Partial<Record<keyof ProfileFormData, string>>;
+type FieldErrors = Partial<Record<keyof ProfileFormData, string>>
 
 interface ProfileFormProps {
-  profile: Profile;
+  profile: Profile
 }
 
 export default function ProfileForm({ profile }: ProfileFormProps) {
-  const router = useRouter();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
-  const [successMessage, setSuccessMessage] = useState<string>('');
+  const router = useRouter()
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
+  const [successMessage, setSuccessMessage] = useState<string>('')
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setFieldErrors({});
-    setSuccessMessage('');
+    e.preventDefault()
+    console.log('[LOG] - Form submitted')
+    setIsSubmitting(true)
+    setFieldErrors({})
+    setSuccessMessage('')
 
-    const formData = new FormData(e.currentTarget);
-    const data = Object.fromEntries(formData);
+    const formData = new FormData(e.currentTarget)
+    const data = Object.fromEntries(formData)
 
     try {
       const validatedData = ProfileSchema.parse({
@@ -37,49 +38,49 @@ export default function ProfileForm({ profile }: ProfileFormProps) {
         linkedin: data.linkedin || null,
         github: data.github || null,
         website: data.website || null,
-      });
+      })
 
       const response = await fetch('/api/profile', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(validatedData),
-      });
+      })
 
       if (!response.ok) {
-        throw new Error('Failed to update profile');
+        console.error(`[ERROR] - Failed to update profile`)
+        throw new Error('Failed to update profile')
       }
 
-      setSuccessMessage('Profile updated successfully!');
-      router.refresh();
+      console.log('[LOG] - Profile updated successfully')
+
+      setSuccessMessage('Profile updated successfully!')
+      router.refresh()
 
       setTimeout(() => {
-        setSuccessMessage('');
-      }, 3000);
+        setSuccessMessage('')
+      }, 3000)
     } catch (error) {
       if (error instanceof ZodError) {
-        const errors: FieldErrors = {};
+        const errors: FieldErrors = {}
         error.errors.forEach((err) => {
           if (err.path[0]) {
-            errors[err.path[0] as keyof ProfileFormData] = err.message;
+            errors[err.path[0] as keyof ProfileFormData] = err.message
           }
-        });
-        setFieldErrors(errors);
+        })
+        setFieldErrors(errors)
       } else {
-        console.error('Profile update error:', error);
+        console.error('[ERROR] - Profile update error:', error)
       }
     } finally {
-      setIsSubmitting(false);
+      console.log('[LOG] - Form submission completed')
+      setIsSubmitting(false)
     }
-  };
+  }
 
   return (
     <div>
-      {successMessage && (
-        <div className="mb-4 p-4 bg-green-50 text-green-600 rounded-md">
-          {successMessage}
-        </div>
-      )}
-      
+      {successMessage && <div className="mb-4 p-4 bg-green-50 text-green-600 rounded-md">{successMessage}</div>}
+
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label htmlFor="name" className="block text-sm font-medium">
@@ -92,9 +93,7 @@ export default function ProfileForm({ profile }: ProfileFormProps) {
             defaultValue={profile.name || ''}
             className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
           />
-          {fieldErrors.name && (
-            <p className="text-sm text-red-500">{fieldErrors.name}</p>
-          )}
+          {fieldErrors.name && <p className="text-sm text-red-500">{fieldErrors.name}</p>}
         </div>
 
         <div>
@@ -108,9 +107,7 @@ export default function ProfileForm({ profile }: ProfileFormProps) {
             defaultValue={profile.dateOfBirth ? new Date(profile.dateOfBirth).toISOString().split('T')[0] : ''}
             className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
           />
-          {fieldErrors.dateOfBirth && (
-            <p className="text-sm text-red-500">{fieldErrors.dateOfBirth}</p>
-          )}
+          {fieldErrors.dateOfBirth && <p className="text-sm text-red-500">{fieldErrors.dateOfBirth}</p>}
         </div>
 
         <div>
@@ -124,9 +121,7 @@ export default function ProfileForm({ profile }: ProfileFormProps) {
             defaultValue={profile.image || ''}
             className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
           />
-          {fieldErrors.image && (
-            <p className="text-sm text-red-500">{fieldErrors.image}</p>
-          )}
+          {fieldErrors.image && <p className="text-sm text-red-500">{fieldErrors.image}</p>}
         </div>
 
         <div>
@@ -140,9 +135,7 @@ export default function ProfileForm({ profile }: ProfileFormProps) {
             defaultValue={profile.bio || ''}
             className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
           />
-          {fieldErrors.bio && (
-            <p className="text-sm text-red-500">{fieldErrors.bio}</p>
-          )}
+          {fieldErrors.bio && <p className="text-sm text-red-500">{fieldErrors.bio}</p>}
         </div>
 
         <div>
@@ -156,9 +149,7 @@ export default function ProfileForm({ profile }: ProfileFormProps) {
             defaultValue={profile.bluesky || ''}
             className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
           />
-          {fieldErrors.bluesky && (
-            <p className="text-sm text-red-500">{fieldErrors.bluesky}</p>
-          )}
+          {fieldErrors.bluesky && <p className="text-sm text-red-500">{fieldErrors.bluesky}</p>}
         </div>
 
         <div>
@@ -172,9 +163,7 @@ export default function ProfileForm({ profile }: ProfileFormProps) {
             defaultValue={profile.linkedin || ''}
             className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
           />
-          {fieldErrors.linkedin && (
-            <p className="text-sm text-red-500">{fieldErrors.linkedin}</p>
-          )}
+          {fieldErrors.linkedin && <p className="text-sm text-red-500">{fieldErrors.linkedin}</p>}
         </div>
 
         <div>
@@ -188,9 +177,7 @@ export default function ProfileForm({ profile }: ProfileFormProps) {
             defaultValue={profile.github || ''}
             className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
           />
-          {fieldErrors.github && (
-            <p className="text-sm text-red-500">{fieldErrors.github}</p>
-          )}
+          {fieldErrors.github && <p className="text-sm text-red-500">{fieldErrors.github}</p>}
         </div>
 
         <div>
@@ -204,9 +191,7 @@ export default function ProfileForm({ profile }: ProfileFormProps) {
             defaultValue={profile.website || ''}
             className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
           />
-          {fieldErrors.website && (
-            <p className="text-sm text-red-500">{fieldErrors.website}</p>
-          )}
+          {fieldErrors.website && <p className="text-sm text-red-500">{fieldErrors.website}</p>}
         </div>
 
         <button
@@ -218,5 +203,5 @@ export default function ProfileForm({ profile }: ProfileFormProps) {
         </button>
       </form>
     </div>
-  );
-} 
+  )
+}

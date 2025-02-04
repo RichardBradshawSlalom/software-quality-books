@@ -9,7 +9,7 @@ export async function PATCH(req: Request) {
   try {
     const session = await getServerSession(authOptions)
     if (!session?.user) {
-      console.error('[ERROR]: Unauthorized')
+      console.error('[ERROR] - Unauthorized')
       return new NextResponse('Unauthorized', { status: 401 })
     }
 
@@ -20,6 +20,7 @@ export async function PATCH(req: Request) {
       ProfileSchema.parse(body)
     } catch (error) {
       if (error instanceof ZodError) {
+        console.error('[ERROR] - Validation failed - ', error)
         return new NextResponse(
           JSON.stringify({
             error: 'Validation failed',
@@ -74,7 +75,7 @@ export async function PATCH(req: Request) {
 
     return NextResponse.json(updatedUser)
   } catch (error) {
-    console.error('[ERROR]: Profile update error - ', error)
+    console.error('[ERROR] - Profile update error - ', error)
     return new NextResponse(JSON.stringify({ error: 'Failed to update profile' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },

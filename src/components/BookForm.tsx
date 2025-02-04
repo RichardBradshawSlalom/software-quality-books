@@ -18,57 +18,51 @@ interface BookFormProps {
 export default function BookForm({ initialData, isEditing, returnUrl = '/books' }: BookFormProps) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
-  const showNotification = useNotificationStore(state => state.showNotification)
+  const showNotification = useNotificationStore((state) => state.showNotification)
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    console.log('[LOG] - Form submitted')
     setLoading(true)
 
     const formData = new FormData(e.currentTarget)
     const data = {
       title: formData.get('title'),
-      description: formData.get('description')
+      description: formData.get('description'),
     }
 
     try {
       const validatedData = BookSchema.parse(data)
-      
+
       const url = isEditing ? `/api/books/${initialData?.id}` : '/api/books'
       const method = isEditing ? 'PUT' : 'POST'
 
       const res = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(validatedData)
+        body: JSON.stringify(validatedData),
       })
 
       if (!res.ok) {
         const errorData = await res.json()
+        console.error('[ERROR] - Failed to save book:', errorData)
         throw new Error(errorData.error || 'Failed to save book')
       }
 
-      showNotification(
-        isEditing ? 'Book updated successfully!' : 'Book added successfully!',
-        'success'
-      )
+      showNotification(isEditing ? 'Book updated successfully!' : 'Book added successfully!', 'success')
       router.push(returnUrl)
       router.refresh()
     } catch (error) {
-      showNotification(
-        error instanceof Error ? error.message : 'An unexpected error occurred',
-        'error'
-      )
+      console.error('[ERROR] - Error saving book:', error)
+      showNotification(error instanceof Error ? error.message : 'An unexpected error occurred', 'error')
     } finally {
       setLoading(false)
+      console.log('[LOG] - Form submission completed')
     }
   }
 
   return (
-    <form 
-      onSubmit={handleSubmit}
-      noValidate
-      className="space-y-4"
-    >
+    <form onSubmit={handleSubmit} noValidate className="space-y-4">
       <div>
         <label htmlFor="title" className="block text-sm font-medium">
           Title
@@ -106,4 +100,4 @@ export default function BookForm({ initialData, isEditing, returnUrl = '/books' 
       </button>
     </form>
   )
-} 
+}

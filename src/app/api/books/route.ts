@@ -17,7 +17,7 @@ export async function GET() {
     })
     return NextResponse.json(books)
   } catch (error) {
-    console.error('[ERROR]: Failed to fetch books - ', error)
+    console.error('[ERROR] - Failed to fetch books - ', error)
     return NextResponse.json({ error: 'Failed to fetch books' }, { status: 500 })
   }
 }
@@ -26,7 +26,7 @@ export async function POST(request: Request) {
   const session = await getServerSession(authOptions)
 
   if (!session) {
-    console.error('[ERROR]: Unauthorized')
+    console.error('[ERROR] - Unauthorized')
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -47,10 +47,10 @@ export async function POST(request: Request) {
     return NextResponse.json(book, { status: 201 })
   } catch (error) {
     if (error instanceof ZodError) {
-      console.error('[ERROR]: ', error)
+      console.error('[ERROR] - ', error)
       return NextResponse.json({ error: error.errors[0].message }, { status: 400 })
     }
-    console.error('[ERROR]: Failed to create book - ', error)
+    console.error('[ERROR] - Failed to create book - ', error)
     return NextResponse.json({ error: 'Failed to create book' }, { status: 500 })
   }
 }

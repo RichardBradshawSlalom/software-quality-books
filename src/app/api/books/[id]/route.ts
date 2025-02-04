@@ -13,13 +13,13 @@ export async function GET(request: Request, { params }: { params: { id: string }
     })
 
     if (!book) {
-      console.error('[ERROR]: Book not found')
+      console.error('[ERROR] - Book not found')
       return NextResponse.json({ error: 'Book not found' }, { status: 404 })
     }
 
     return NextResponse.json(book)
   } catch (error) {
-    console.error('[ERROR]: Failed to fetch book')
+    console.error('[ERROR] - Failed to fetch book')
     return NextResponse.json({ error: 'Failed to fetch book' }, { status: 500 })
   }
 }
@@ -28,7 +28,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   const session = await getServerSession(authOptions)
 
   if (!session) {
-    console.error('[ERROR]: Unauthorized')
+    console.error('[ERROR] - Unauthorized')
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -38,12 +38,12 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     })
 
     if (!book) {
-      console.error('[ERROR]: Book not found')
+      console.error('[ERROR] - Book not found')
       return NextResponse.json({ error: 'Book not found' }, { status: 404 })
     }
 
     if (book.userId !== session.user.id) {
-      console.error('[ERROR]: Not authorized to edit this book')
+      console.error('[ERROR] - Not authorized to edit this book')
       return NextResponse.json({ error: 'Not authorized to edit this book' }, { status: 403 })
     }
 
@@ -63,10 +63,10 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     return NextResponse.json(updatedBook)
   } catch (error) {
     if (error instanceof ZodError) {
-      console.error('[ERROR]: ', error)
+      console.error('[ERROR] - ', error)
       return NextResponse.json({ error: error.errors[0].message }, { status: 400 })
     }
-    console.error('[ERROR]: Failed to update book - ', error)
+    console.error('[ERROR] - Failed to update book - ', error)
     return NextResponse.json({ error: 'Failed to update book' }, { status: 500 })
   }
 }
@@ -98,7 +98,7 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
     console.log('[SUCCESS]: Book deleted successfully')
     return NextResponse.json({ message: 'Book deleted successfully' })
   } catch (error) {
-    console.error('[ERROR]: Failed to delete book')
+    console.error('[ERROR] - Failed to delete book')
     return NextResponse.json({ error: 'Failed to delete book' }, { status: 500 })
   }
 }

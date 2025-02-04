@@ -15,7 +15,7 @@ const handler = NextAuth({
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          console.error('[ERROR]: Email or password not entered')
+          console.error('[ERROR] - Email or password not entered')
           throw new Error('Please enter an email and password')
         }
 
@@ -24,14 +24,14 @@ const handler = NextAuth({
         })
 
         if (!user || !user.password) {
-          console.error('[ERROR]: No user found')
+          console.error('[ERROR] - No user found')
           throw new Error('No user found')
         }
 
         const passwordMatch = await bcrypt.compare(credentials.password, user.password)
 
         if (!passwordMatch) {
-          console.error('[ERROR]: Incorrect password')
+          console.error('[ERROR] - Incorrect password')
           throw new Error('Incorrect password')
         }
         return {
