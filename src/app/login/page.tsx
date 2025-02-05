@@ -30,6 +30,7 @@ function LoginForm() {
     // Validate using Zod schema
     const result = LoginSchema.safeParse({ email, password })
     if (!result.success) {
+      console.log('[LOG] - Validation errors:', result.error.errors)
       const errors = result.error.errors.reduce((acc, curr) => {
         acc[curr.path[0] as 'email' | 'password'] = curr.message
         return acc
@@ -46,6 +47,7 @@ function LoginForm() {
         password,
         redirect: false,
       })
+      console.log('[LOG] - Sign in response:', res)
 
       if (res?.error) {
         console.error('[ERROR] - Sign in error:', res.error)
@@ -53,7 +55,7 @@ function LoginForm() {
       }
 
       const callbackUrl = searchParams.get('callbackUrl') || '/books'
-      console.log('[SUCCESS] - Sign in successful, redirecting to:', callbackUrl)
+      console.log('[LOG] - Sign in successful, redirecting to:', callbackUrl)
       router.push(callbackUrl)
       router.refresh()
     } catch (error: unknown) {
@@ -66,6 +68,7 @@ function LoginForm() {
       }
     } finally {
       setLoading(false)
+      console.log('[LOG] - Form submission completed, setting loading to false')
     }
   }
 

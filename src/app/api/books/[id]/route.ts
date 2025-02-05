@@ -7,10 +7,12 @@ import { BookSchema } from '@/lib/validations/book'
 import { ZodError } from 'zod'
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
+  console.log('[LOG] - GET request received for book ID:', params.id)
   try {
     const book = await prisma.book.findUnique({
       where: { id: params.id },
     })
+    console.log('[LOG] - Book fetched:', book)
 
     if (!book) {
       console.error('[ERROR] - Book not found')
@@ -25,7 +27,9 @@ export async function GET(request: Request, { params }: { params: { id: string }
 }
 
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
+  console.log('[LOG] - PUT request received for book ID:', params.id)
   const session = await getServerSession(authOptions)
+  console.log('[LOG] - Session:', session)
 
   if (!session) {
     console.error('[ERROR] - Unauthorized')
@@ -59,11 +63,12 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         description: validatedData.description,
       },
     })
+    console.log('[LOG] - Book updated:', updatedBook)
 
     return NextResponse.json(updatedBook)
   } catch (error) {
     if (error instanceof ZodError) {
-      console.error('[ERROR] - ', error)
+      console.error('[ERROR] - Validation error:', error)
       return NextResponse.json({ error: error.errors[0].message }, { status: 400 })
     }
     console.error('[ERROR] - Failed to update book - ', error)
@@ -72,6 +77,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 }
 
 export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+  console.log('[LOG] - DELETE request received for book ID:', params.id)
   const session = await getServerSession(authOptions)
 
   if (!session) {
@@ -82,12 +88,15 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
     const book = await prisma.book.findUnique({
       where: { id: params.id },
     })
+    console.log('[LOG] - Book fetched for deletion:', book)
 
     if (!book) {
+      console.error('[ERROR] - Book not found')
       return NextResponse.json({ error: 'Book not found' }, { status: 404 })
     }
 
     if (book.userId !== session.user.id) {
+      console.error('[ERROR] - Not authorized to delete this book')
       return NextResponse.json({ error: 'Not authorized to delete this book' }, { status: 403 })
     }
 
@@ -95,10 +104,10 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
       where: { id: params.id },
     })
 
-    console.log('[SUCCESS]: Book deleted successfully')
+    console.log('[LOG]: Book deleted')
     return NextResponse.json({ message: 'Book deleted successfully' })
   } catch (error) {
-    console.error('[ERROR] - Failed to delete book')
+    console.error('[ERROR] - Failed to delete book:', error)
     return NextResponse.json({ error: 'Failed to delete book' }, { status: 500 })
   }
 }

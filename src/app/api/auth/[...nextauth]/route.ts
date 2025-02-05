@@ -14,6 +14,7 @@ const handler = NextAuth({
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
+        console.log('[LOG] - Authorize called with credentials:', credentials)
         if (!credentials?.email || !credentials?.password) {
           console.error('[ERROR] - Email or password not entered')
           throw new Error('Please enter an email and password')
@@ -22,6 +23,7 @@ const handler = NextAuth({
         const user = await prisma.user.findUnique({
           where: { email: credentials.email },
         })
+        console.log('[LOG] - User found:', user)
 
         if (!user || !user.password) {
           console.error('[ERROR] - No user found')

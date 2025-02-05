@@ -27,7 +27,6 @@ export default function DeleteBookButton({ bookId }: { bookId: string }) {
       }
 
       showNotification('Book deleted successfully!', 'success')
-      console.log('[SUCCESS]: Book deleted')
       router.push('/books')
       router.refresh()
     } catch (error) {

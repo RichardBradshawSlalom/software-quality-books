@@ -49,7 +49,7 @@ export default function ReviewForm({ bookId, onReviewAdded }: ReviewFormProps) {
     setLoading(true)
 
     try {
-      console.log('Submitting review:', { content, rating })
+      console.log('[LOG] - Submitting review:', { content, rating })
 
       const res = await fetch(`/api/books/${bookId}/reviews`, {
         method: 'POST',
@@ -61,7 +61,7 @@ export default function ReviewForm({ bookId, onReviewAdded }: ReviewFormProps) {
       })
 
       const data = await res.json()
-      console.log('Response:', data)
+      console.log('[LOG] - Response:', data)
 
       if (!res.ok) {
         if (res.status === 400) {
@@ -76,6 +76,8 @@ export default function ReviewForm({ bookId, onReviewAdded }: ReviewFormProps) {
       }
 
       // Reset form
+      console.log('Review submitted successfully')
+
       setContent('')
       setRating('')
 
@@ -93,8 +95,8 @@ export default function ReviewForm({ bookId, onReviewAdded }: ReviewFormProps) {
         setError('An unexpected error occurred while submitting the review')
       }
     } finally {
+      console.log('Form submission completed, setting loading to false')
       setLoading(false)
-      console.log('[LOG] - Form submission completed')
     }
   }
 

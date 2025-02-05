@@ -30,6 +30,7 @@ export default function RegisterPage() {
 
     try {
       const validatedData = RegisterSchema.parse(data)
+      console.log('[LOG] - Validated data:', validatedData)
 
       const res = await fetch('/api/auth/register', {
         method: 'POST',
@@ -49,6 +50,7 @@ export default function RegisterPage() {
       router.push('/login')
     } catch (error) {
       if (error instanceof ZodError) {
+        console.log('[LOG] - Validation errors:', error.errors)
         const errors: FieldErrors = {}
         error.errors.forEach((err) => {
           if (err.path[0]) {

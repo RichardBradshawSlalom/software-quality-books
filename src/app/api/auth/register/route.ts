@@ -4,7 +4,9 @@ import prisma from '@/lib/db'
 
 export async function POST(request: Request) {
   try {
+    console.log('[LOG] - Received POST request')
     const { email, password, name } = await request.json()
+    console.log('[LOG] - Request body:', { email, name })
 
     if (!email || !password) {
       console.error('[ERROR] - No email or no password entered')
@@ -14,6 +16,7 @@ export async function POST(request: Request) {
     const existingUser = await prisma.user.findUnique({
       where: { email },
     })
+    console.log('[LOG] - Existing user check:', existingUser)
 
     if (existingUser) {
       console.error('[ERROR] - User already exists')
@@ -39,6 +42,7 @@ export async function POST(request: Request) {
         profile: true,
       },
     })
+    console.log('[LOG] - User created:', user)
 
     return NextResponse.json(
       {

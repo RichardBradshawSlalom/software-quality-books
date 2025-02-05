@@ -30,9 +30,11 @@ export default function BookForm({ initialData, isEditing, returnUrl = '/books' 
       title: formData.get('title'),
       description: formData.get('description'),
     }
+    console.log('[LOG] - Form data:', data)
 
     try {
       const validatedData = BookSchema.parse(data)
+      console.log('[LOG] - Validated data:', validatedData)
 
       const url = isEditing ? `/api/books/${initialData?.id}` : '/api/books'
       const method = isEditing ? 'PUT' : 'POST'
@@ -56,6 +58,7 @@ export default function BookForm({ initialData, isEditing, returnUrl = '/books' 
       console.error('[ERROR] - Error saving book:', error)
       showNotification(error instanceof Error ? error.message : 'An unexpected error occurred', 'error')
     } finally {
+      console.log('[LOG] - Form submission completed, setting loading to false')
       setLoading(false)
       console.log('[LOG] - Form submission completed')
     }

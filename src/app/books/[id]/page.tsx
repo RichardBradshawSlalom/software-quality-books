@@ -31,6 +31,7 @@ interface BookState {
 
 export default function BookPage({ params }: { params: { id: string } }) {
   const { data: session } = useSession()
+  console.log('[LOG] - Session:', session)
   const [state, setState] = useState<BookState>({
     book: null,
     reviews: [],
@@ -39,6 +40,7 @@ export default function BookPage({ params }: { params: { id: string } }) {
   })
 
   const fetchData = async () => {
+    console.log('[LOG] - Fetching data for book ID:', params.id)
     try {
       const [bookRes, reviewsRes] = await Promise.all([
         fetch(`/api/books/${params.id}`),
@@ -57,6 +59,8 @@ export default function BookPage({ params }: { params: { id: string } }) {
 
       const book = await bookRes.json()
       const reviews = await reviewsRes.json()
+      console.log('[LOG] - Book fetched:', book)
+      console.log('[LOG] - Reviews fetched:', reviews)
 
       setState({
         book,
@@ -65,12 +69,12 @@ export default function BookPage({ params }: { params: { id: string } }) {
         error: null,
       })
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'An error occurred'
+      console.error('[ERROR] - Error fetching data:', error)
 
       setState((prev) => ({
         ...prev,
         isLoading: false,
-        error: errorMessage,
+        error: error instanceof Error ? error.message : 'An error occurred',
       }))
     }
   }
@@ -85,6 +89,7 @@ export default function BookPage({ params }: { params: { id: string } }) {
   }, [params.id])
 
   if (state.isLoading) {
+    console.log('[LOG] - State is loading')
     return (
       <div className="container mx-auto p-4">
         <h1 className="text-3xl font-bold mb-6">Loading...</h1>

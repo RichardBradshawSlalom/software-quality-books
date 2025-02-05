@@ -6,8 +6,10 @@ import { ProfileSchema } from '@/lib/validations/profile'
 import { ZodError } from 'zod'
 
 export async function PATCH(req: Request) {
+  console.log('[LOG] - PATCH request received for profile update')
   try {
     const session = await getServerSession(authOptions)
+    console.log('[LOG] - Session:', session)
     if (!session?.user) {
       console.error('[ERROR] - Unauthorized')
       return new NextResponse('Unauthorized', { status: 401 })
@@ -18,9 +20,10 @@ export async function PATCH(req: Request) {
     // Validate the input
     try {
       ProfileSchema.parse(body)
+      console.log('[LOG] - Validation successful')
     } catch (error) {
       if (error instanceof ZodError) {
-        console.error('[ERROR] - Validation failed - ', error)
+        console.error('[ERROR] - Validation failed - ', error.errors)
         return new NextResponse(
           JSON.stringify({
             error: 'Validation failed',
@@ -72,7 +75,7 @@ export async function PATCH(req: Request) {
         profile: true,
       },
     })
-
+    console.log('[LOG] - Profile updated:', updatedUser)
     return NextResponse.json(updatedUser)
   } catch (error) {
     console.error('[ERROR] - Profile update error - ', error)
