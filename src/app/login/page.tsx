@@ -110,7 +110,7 @@ function LoginForm() {
         </form>
 
         <p className="text-center text-sm">
-          Don&apos;t have an account?{' '}
+          Need an account?{' '}
           <Link href="/register" className="text-blue-500 hover:underline">
             Register
           </Link>
