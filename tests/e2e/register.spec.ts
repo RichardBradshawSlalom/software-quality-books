@@ -8,6 +8,7 @@ test.describe('Registration', () => {
     userBuilder 
   }) => {
     const testUser = await userBuilder.build()
+    console.log(testUser)
     await registrationHelper.registerNewUser(testUser)
 
     await expect(registerPage.page.getByText('Account created successfully!')).toBeVisible()
@@ -26,11 +27,12 @@ test.describe('Registration', () => {
     const testUser = await userBuilder
       .withName('A')  // Set name to single character
       .build()
+    console.log(testUser)
     
     await registrationHelper.registerNewUser(testUser)
 
-    await expect(registerPage.page.getByText('Name must be at least 2 characters')).toBeVisible()
-    await expect(registerPage.page).toHaveURL('/register') // Should stay on register page
+    await expect(registerPage.page.getByText('Name must be at least 2 characters'), 'Checking name error is displayed').toBeVisible()
+    await expect(registerPage.page, 'Checking we are on the register page').toHaveURL('/register') // Should stay on register page
   }),
 
   test('shows error when email format is invalid', async ({ 
@@ -41,11 +43,12 @@ test.describe('Registration', () => {
     const testUser = await userBuilder
       .withEmail('not-an-email')  // Set invalid email format
       .build()
+    console.log(testUser)
     
     await registrationHelper.registerNewUser(testUser)
 
-    await expect(registerPage.page.getByText('Invalid email address')).toBeVisible()
-    await expect(registerPage.page).toHaveURL('/register')
+    await expect(registerPage.page.getByText('Invalid email address'), 'Checking email error message is displayed').toBeVisible()
+    await expect(registerPage.page, 'Checking we are on the register page').toHaveURL('/register')
   }),
 
   test('shows error when password is only 5 characters', async ({ 
@@ -59,8 +62,8 @@ test.describe('Registration', () => {
     
     await registrationHelper.registerNewUser(testUser)
 
-    await expect(registerPage.page.getByText('Password must be at least 8 characters')).toBeVisible()
-    await expect(registerPage.page).toHaveURL('/register')
+    await expect(registerPage.page.getByText('Password must be at least 8 characters'), 'Checking password error message is displayed').toBeVisible()
+    await expect(registerPage.page, 'Checking we are on the register page').toHaveURL('/register')
   }),
 
   test('shows both name and email errors when password is valid', async ({ 
@@ -72,13 +75,14 @@ test.describe('Registration', () => {
       .withName('A')  // Invalid name (too short)
       .withEmail('not-an-email')  // Invalid email format
       .build()
-    
+    console.log(testUser)
+
     await registrationHelper.registerNewUser(testUser)
 
     // Check that both error messages are visible
-    await expect(registerPage.page.getByText('Name must be at least 2 characters')).toBeVisible()
-    await expect(registerPage.page.getByText('Invalid email address')).toBeVisible()
-    await expect(registerPage.page).toHaveURL('/register')
+    await expect(registerPage.page.getByText('Name must be at least 2 characters'), 'Checking name error message is displayed').toBeVisible()
+    await expect(registerPage.page.getByText('Invalid email address'), 'Checking email error message is displayed').toBeVisible()
+    await expect(registerPage.page, 'Checking we are on the register page').toHaveURL('/register')
   }),
 
   test('makes no API calls when validation fails', async ({ 
@@ -98,15 +102,17 @@ test.describe('Registration', () => {
       .withName('A')  // Invalid name (too short)
       .withEmail('not-an-email')  // Invalid email format
       .build()
+
+    console.log(testUser)
     
     await registrationHelper.registerNewUser(testUser)
 
     // Verify validation errors are shown
-    await expect(registerPage.page.getByText('Name must be at least 2 characters')).toBeVisible()
-    await expect(registerPage.page.getByText('Invalid email address')).toBeVisible()
+    await expect(registerPage.page.getByText('Name must be at least 2 characters'), 'Checking name error message is displayed').toBeVisible()
+    await expect(registerPage.page.getByText('Invalid email address'), 'Checking email error messsage is displayed').toBeVisible()
     
     // Verify no API call was made
-    expect(apiCallMade).toBe(false)
+    expect(apiCallMade, "Checking we didn't call the register API").toBe(false)
   }),
 
   test('has correct login link text and path', async ({ registerPage }) => {
@@ -114,7 +120,7 @@ test.describe('Registration', () => {
     
     const loginLink = registerPage.page.getByText('Already have an account? Sign in')
     
-    await expect(loginLink).toBeVisible()
-    await expect(loginLink).toHaveAttribute('href', '/login')
+    await expect(loginLink, 'Checking login button is displayed').toBeVisible()
+    await expect(loginLink, 'Checking where the login button goes').toHaveAttribute('href', '/login')
   })
 })
