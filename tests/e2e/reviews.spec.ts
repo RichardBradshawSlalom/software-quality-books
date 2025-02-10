@@ -19,6 +19,7 @@ test.describe('Book Reviews', () => {
 
   test.beforeAll(async ({ bookBuilder }) => {
     testBook = await bookBuilder.create()
+    console.log(testBook)
   })
 
   test.afterAll(async () => {
@@ -31,34 +32,32 @@ test.describe('Book Reviews', () => {
   test('should show review form when user is logged in', async ({ reviewPage, authHelper }) => {
     await authHelper.loginUser()
     await reviewPage.goto(testBook.id)
-    await expect(reviewPage.reviewForm).toBeVisible()
+    await expect(reviewPage.reviewForm, 'Checking review form is displayed').toBeVisible()
   })
 
   test('should not show review form when user is not logged in', async ({ reviewPage }) => {
     await reviewPage.goto(testBook.id)
-    await expect(reviewPage.reviewForm).not.toBeVisible()
-    await expect(reviewPage.page.getByText('Sign in to leave a review')).toBeVisible()
+    await expect(reviewPage.reviewForm, 'Checking review form is not displayed').not.toBeVisible()
+    await expect(reviewPage.page.getByText('Sign in to leave a review'), 'Checking sign in error is displayed').toBeVisible()
   })
 
   test('should show validation error when submitting empty review', async ({ reviewPage, authHelper }) => {
     await authHelper.loginUser()
     await reviewPage.goto(testBook.id)
     await reviewPage.submitReview('', 0)
-    await expect(reviewPage.page.getByText('Review content is required')).toBeVisible()
-    await expect(reviewPage.page.getByText('Rating is required')).toBeVisible()
+    await expect(reviewPage.page.getByText('Review content is required'), 'Checking review content error is displayed').toBeVisible()
+    await expect(reviewPage.page.getByText('Rating is required'), 'Checking review rating error message is displayed').toBeVisible()
   })
 
   test('should successfully submit review', async ({ reviewPage, authHelper }) => {
     const testUser = await authHelper.loginUser()
+    console.log(testUser)
     await reviewPage.goto(testBook.id)
     
     const reviewContent = 'This is a test review'
     const rating = 4
     
     await reviewPage.submitReview(reviewContent, rating)
-    
-    // Verify the review appears on the page
-    
     
     // Cleanup
     await UserBuilder.delete(testUser.email)

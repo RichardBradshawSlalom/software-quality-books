@@ -72,6 +72,12 @@ export class BookBuilder extends TestDataBuilder<Book> {
     })
   }
 
+  static async deleteByTitle(title: string) {
+    await prisma.book.deleteMany({
+      where: { title }
+    });
+  }
+
   // Static method for bulk deletion
   static async deleteAll() {
     await prisma.book.deleteMany()

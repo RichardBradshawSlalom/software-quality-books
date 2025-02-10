@@ -2,11 +2,11 @@ import { jest } from '@jest/globals'
 import { render, screen } from '@testing-library/react'
 import { BookCard } from '@/components/BookCard'
 import { faker } from '@faker-js/faker'
-import userEvent from '@testing-library/user-event'
 import { generateTestId, TEST_DATA_IDS } from '@/utils/idHelpers'
 
 // Mock Next.js Link component
 jest.mock('next/link', () => {
+  // eslint-disable-next-line react/display-name
   return ({ children, href }: { children: React.ReactNode; href: string }) => (
     <a href={href}>{children}</a>
   )
@@ -22,8 +22,13 @@ describe('BookCard', () => {
     userId: faker.string.uuid()
   }
 
+  beforeEach(() => {
+    console.log('\nTest Data:', JSON.stringify(mockBook, null, 2));
+  });
+
   it('renders book information correctly', () => {
     render(<BookCard book={mockBook} />)
+    screen.debug();
 
     // Check if the component renders with correct test ID
     const bookCard = screen.getByTestId(
@@ -44,6 +49,7 @@ describe('BookCard', () => {
 
   it('renders links with correct hrefs', () => {
     render(<BookCard book={mockBook} />)
+    screen.debug();
 
     // Check title link
     const titleLink = screen.getByRole('link', { name: mockBook.title })

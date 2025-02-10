@@ -5,7 +5,7 @@ import { BookBuilder } from '../data-builders/book-builder'
 import { Book } from '@prisma/client'
 
 test.describe('Book page data', () => {
-  // Configure tests to run serially
+  
   test.describe.configure({ mode: 'serial' })
   
   let testBook: Book & { 
@@ -21,6 +21,8 @@ test.describe('Book page data', () => {
   test.beforeAll(async ({ bookBuilder }) => {
     testBook = await bookBuilder
       .create()
+
+    console.log(testBook)
   })
 
   test.afterAll(async () => {
@@ -30,16 +32,15 @@ test.describe('Book page data', () => {
     }
   })
 
-
   test('should display book with correct title', async ({ bookPage }) => {
     await bookPage.goto(testBook.id)
     const bookTitle = await bookPage.getBookTitle()
-    expect(bookTitle).toBe(testBook.title)
+    expect(bookTitle, 'Expected book title to match').toBe(testBook.title)
   })
 
   test('should display book with correct description', async ({ bookPage }) => {
     await bookPage.goto(testBook.id)
     const bookDescription = await bookPage.getBookDescription()
-    expect(bookDescription).toBe(testBook.description)
+    expect(bookDescription, 'Expect book description to match').toBe(testBook.description)
   })
 })
