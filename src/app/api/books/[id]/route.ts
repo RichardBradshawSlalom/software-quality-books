@@ -61,6 +61,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       data: {
         title: validatedData.title,
         description: validatedData.description,
+        summary: validatedData.summary,
       },
     })
     console.log('[LOG] - Book updated:', updatedBook)

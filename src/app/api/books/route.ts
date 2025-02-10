@@ -39,11 +39,22 @@ export async function POST(request: Request) {
 
     // Validate the input
     const validatedData = BookSchema.parse(body)
+    console.log('[LOG] - Validated data:', validatedData)
+
+    // Check if userId exists in the User table
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+    })
+    if (!user) {
+      console.error('[ERROR] - User not found for userId:', session.user.id)
+      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    }
 
     const book = await prisma.book.create({
       data: {
         title: validatedData.title,
         description: validatedData.description,
+        summary: validatedData.summary,
         userId: session.user.id,
       },
     })
