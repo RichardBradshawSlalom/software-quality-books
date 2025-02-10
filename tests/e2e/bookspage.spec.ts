@@ -21,6 +21,7 @@ test.describe('Books Page', () => {
   test.beforeAll(async ({ bookBuilder }) => {
     testBook = await bookBuilder
       .create()
+    console.log(testBook)
   })
 
   test.afterAll(async () => {
@@ -32,21 +33,21 @@ test.describe('Books Page', () => {
 
   test('should display created book', async ({ booksPage }) => {
     await booksPage.goto()
-    await expect(booksPage.getBookCard(testBook.title)).toBeVisible()
+    await expect(booksPage.getBookCard(testBook.title), "Checking book title is visible").toBeVisible()
   })
 
 
   test('should display book with correct title', async ({ booksPage }) => {
     await booksPage.goto()
     const bookTitle = await booksPage.getBookTitle(testBook.title)
-    expect(bookTitle).toBe(testBook.title)
+    expect(bookTitle, 'Checking book title is correct').toBe(testBook.title)
   })
 
   test('should display book with correct created date', async ({ booksPage }) => {
     await booksPage.goto()
     const bookCreatedDate = await booksPage.getBookCreatedDate(testBook.title)
     const expectedDate = new Intl.DateTimeFormat('en-US').format(testBook.createdAt)
-    expect(bookCreatedDate).toBe(expectedDate)
+    expect(bookCreatedDate, 'Checking created date is correct').toBe(expectedDate)
   })
 
 })

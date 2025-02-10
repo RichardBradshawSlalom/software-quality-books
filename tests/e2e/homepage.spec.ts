@@ -8,13 +8,14 @@ test.describe('Homepage', () => {
     // Create and login test user
     const authHelper = new AuthHelper(page);
     const testUser = await authHelper.loginUser()
+    console.log(testUser)
 
     // Navigate to homepage
     await homePage.goto()
     
     // Verify add book button is visible
     const addBookButton = await homePage.getAddBookButton()
-    await expect(addBookButton).toBeVisible()
+    await expect(addBookButton, 'Checking add book button is displayed').toBeVisible()
 
     // Cleanup
     await UserBuilder.delete(testUser.email)
