@@ -73,10 +73,13 @@ function LoginForm() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-pink-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
+      <div>
+          <h2 className="mt-6 text-center text-4xl font-extrabold bg-red-700 pb-52 text-gray-900">Time to review a book!</h2>
+        </div>
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Sign in to your account</h2>
+          <h2 className="mt-6 text-center text-4xl font-extrabold text-gray-900">Please sign in</h2>
         </div>
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit} noValidate>
@@ -110,8 +113,8 @@ function LoginForm() {
         </form>
 
         <p className="text-center text-sm">
-          Don&apos;t have an account?{' '}
-          <Link href="/register" className="text-blue-500 hover:underline">
+          Need an account?
+          <Link href="/register" className="text-blue-500 hover:underline pl-3">
             Register
           </Link>
         </p>
