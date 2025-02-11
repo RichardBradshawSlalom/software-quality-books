@@ -20,10 +20,11 @@ test.describe('Books API', () => {
 
     // Create book
     const response = await api.createBook(newBook)
-    console.log('Create book response:', response.json())
+    
+    const addedBook = await response.json();
+    console.log('Create book response:', addedBook)
 
     expect(response.ok()).toBeTruthy()
-    const addedBook = await response.json()
     expect(addedBook.title, 'Book title does not match').toBe(newBook.title)
     expect(addedBook.description, 'Book description does not match').toBe(newBook.description)
 
