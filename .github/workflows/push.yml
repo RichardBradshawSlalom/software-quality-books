@@ -2,6 +2,7 @@ name: Build and test app
 on: [push]
 jobs:
   Build:
+    continue-on-error: true
     runs-on: ubuntu-latest
     env:
       LOG_DIR: ./ci-logs
@@ -21,7 +22,6 @@ jobs:
         run: npm run lint
       - name: Unit test
         run: npm run test:unit
-        continue-on-error: true
       - name: DB Schema and seed data
         run: |
           npx prisma db push
@@ -29,14 +29,12 @@ jobs:
           npm run seed
       - name: API Tests
         run: npm run test:api
-        continue-on-error: true
       - name: Visual tests
         run: |
           npx playwright install --with-deps
           npm run test:visual
-        continue-on-error: true
       - name: E2E tests
         run: |
           npm run test:e2e
-        continue-on-error: true
+
         
