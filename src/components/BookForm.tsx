@@ -10,6 +10,7 @@ interface BookFormProps {
     id?: string
     title: string
     description: string
+    summary: string
   }
   isEditing?: boolean
   returnUrl?: string
@@ -29,6 +30,7 @@ export default function BookForm({ initialData, isEditing, returnUrl = '/books' 
     const data = {
       title: formData.get('title'),
       description: formData.get('description'),
+      summary: formData.get('summary'),
     }
     console.log('[LOG] - Form data:', data)
 
@@ -90,6 +92,20 @@ export default function BookForm({ initialData, isEditing, returnUrl = '/books' 
           required
           rows={5}
           defaultValue={initialData?.description}
+          className="w-full px-3 py-2 border rounded-lg"
+        />
+      </div>
+
+      <div>
+        <label htmlFor="summary" className="block text-sm font-medium">
+          Summary
+        </label>
+        <textarea
+          id="summary"
+          name="summary"
+          required
+          rows={5}
+          defaultValue={initialData?.summary}
           className="w-full px-3 py-2 border rounded-lg"
         />
       </div>
