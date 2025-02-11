@@ -141,13 +141,13 @@ export default function BookPage({ params }: { params: { id: string } }) {
           <h1 className="text-3xl font-bold mb-4" data-testid="book-title">
             {state.book.title}
           </h1>
-          <h2 className="text-2xl font-bold my-4" data-testid="book-description">
+          <h2 className="text-2xl font-bold my-4">
             Description
           </h2>
           <p className="text-gray-600 whitespace-pre-wrap" data-testid="book-description">
             {state.book.description}
           </p>
-          <h2 className="text-2xl font-bold my-4" data-testid="book-summary">
+          <h2 className="text-2xl font-bold my-4">
             Summary
           </h2>
           <p className="text-gray-600 whitespace-pre-wrap" data-testid="book-summary">
