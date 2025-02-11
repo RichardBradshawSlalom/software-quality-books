@@ -3,11 +3,11 @@ export interface Review {
   content: string
   rating: number
   createdAt: string
-  updatedAt: string
-  bookId: string
-  userId: string
-  user?: {
-    name: string | null
-    email: string
+  user: {
+    id: string
+    profile: {
+      name: string | null
+    }
+    email: string | null
   }
-} 
+}

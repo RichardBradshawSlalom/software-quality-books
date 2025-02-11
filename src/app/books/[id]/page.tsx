@@ -7,8 +7,12 @@ import { Book } from '@/types/book'
 import { useSession } from 'next-auth/react'
 import ReviewForm from '@/components/ReviewForm'
 import DeleteBookButton from '@/components/DeleteBookButton'
+import Loading from '@/components/Loading'
+import ErrorComponent from '@/components/ErrorComponent'
+import BookDetails from '@/components/BookDetails'
+import ReviewItem from '@/components/ReviewItem'
 
-interface Review {
+export interface Review {
   id: string
   content: string
   rating: number
@@ -90,21 +94,12 @@ export default function BookPage({ params }: { params: { id: string } }) {
 
   if (state.isLoading) {
     console.log('[LOG] - State is loading')
-    return (
-      <div className="container mx-auto p-4">
-        <h1 className="text-3xl font-bold mb-6">Loading...</h1>
-      </div>
-    )
+    return <Loading />
   }
 
   if (state.error) {
     console.log('[ERROR] - State error: ', state.error)
-    return (
-      <div className="container mx-auto p-4">
-        <h1 className="text-3xl font-bold mb-6">Error</h1>
-        <div className="bg-red-50 text-red-500 p-4 rounded-lg">{state.error}</div>
-      </div>
-    )
+    return <ErrorComponent message={state.error} />
   }
 
   if (!state.book) {
@@ -137,14 +132,7 @@ export default function BookPage({ params }: { params: { id: string } }) {
           )}
         </div>
 
-        <div className="bg-white shadow-lg rounded-lg p-6 mb-8">
-          <h1 className="text-3xl font-bold mb-4" data-testid="book-title">
-            {state.book.title}
-          </h1>
-          <p className="text-gray-600 whitespace-pre-wrap" data-testid="book-description">
-            {state.book.description}
-          </p>
-        </div>
+        <BookDetails book={state.book} />
 
         <div className="mt-8">
           <h2 className="text-2xl font-bold mb-4">Reviews</h2>
@@ -169,17 +157,7 @@ export default function BookPage({ params }: { params: { id: string } }) {
 
           <div className="space-y-6">
             {state.reviews.map((review) => (
-              <div key={review.id} className="bg-gray-50 p-4 rounded-lg">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="font-semibold">{review.user.profile?.name || 'Anonymous'}</div>
-                  <div className="text-yellow-500">
-                    {'★'.repeat(review.rating)}
-                    {'☆'.repeat(5 - review.rating)}
-                  </div>
-                </div>
-                <p className="text-gray-600">{review.content}</p>
-                <div className="text-sm text-gray-400 mt-2">{new Date(review.createdAt).toLocaleDateString()}</div>
-              </div>
+              <ReviewItem key={review.id} review={review} />
             ))}
 
             {state.reviews.length === 0 && (
