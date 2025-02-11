@@ -1,0 +1,30 @@
+name: Build and test app
+on: [push]
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    env:
+      LOG_DIR: ./ci-logs
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: npm
+      - run: mv .env.development .env
+      - run: npm ci
+      - run: npx next build
+      - run: npm run lint
+      - run: npm run test:unit
+      - name: generate schema and seed data
+        run: |
+          npx prisma db push
+          npx prisma generate
+          npm run seed
+      - run: npm run test:api
+      - name: install playwright and runs tests
+        run: |
+          npx playwright install --with-deps
+          npm run test:visual
+      - run: |
+          npm run test:e2e

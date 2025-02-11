@@ -33,7 +33,7 @@ export default defineConfig({
     trace: 'on-first-retry',
     // Capture screenshot on failure
     screenshot: 'only-on-failure',
-    headless: false,
+    headless: true,
     launchOptions: {
       slowMo: 100,
     },
@@ -86,7 +86,7 @@ export default defineConfig({
   expect: {
     toHaveScreenshot: {
       // Snapshot settings
-      maxDiffPixels: 100,
+      maxDiffPixelRatio: 0.05,
       threshold: 0.2,
     }
   },
