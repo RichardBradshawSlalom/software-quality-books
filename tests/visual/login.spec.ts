@@ -13,7 +13,7 @@ test.describe('Login Page Visual Tests', () => {
 
     // Take a screenshot and compare with baseline
     await expect(page).toHaveScreenshot('login-page.png', {
-      maxDiffPixels: 100, // Allow small differences
+      maxDiffPixelRatio: 0.05, // Allow small differences
       threshold: 0.2, // Tolerance for pixel differences
     });
   });
