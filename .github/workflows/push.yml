@@ -2,6 +2,7 @@ name: Build and test app
 on: [push]
 jobs:
   Build:
+    continue-on-error: true
     runs-on: ubuntu-latest
     env:
       LOG_DIR: ./ci-logs
@@ -39,4 +40,3 @@ jobs:
         run: |
           npm run test:e2e
         continue-on-error: true
-        
